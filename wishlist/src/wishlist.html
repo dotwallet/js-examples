@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
+  <title>Wishlist</title>
+</head>
+
+<body>
+  <nav class="navbar navbar navbar-dark bg-dark justify-content-between px-3">
+    <a class="navbar-brand" href="/">
+      <img src="/assets/logo/awesome-logo.svg" height="30px" width="30px" alt="" />
+    </a>
+    <!-- <li class="navbar-nav"> <a id="wishlist-link" class="nav-link">Wishlist</a> -->
+    <!-- </li> -->
+    <span class="navbar-nav flex-row align-items-center">
+      <p id="user-name" class="mx-2 my-0 nav-item text-light"></p>
+      <img height="30px" width="30px" id="user-pic" src="" alt="" />
+    </span>
+  </nav>
+
+  <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
+    <h1 class="mt-3">Wishlist</h1>
+    <h2>What would like to see developed on DotWallet?</h2>
+    <p>
+      Vote for a project by adding money to the prize, or add your own wish to
+      the list! When a developer completes the wish, they will get the funds!
+    </p>
+
+    <a id="autopayment-button" class="btn btn-primary btn-lg m-2">Enable auto-payments</a>
+
+    <ul id="wishlist" class="list-group" style="width: 90%;">
+    </ul>
+
+    <p id="order-status"></p>
+    <h4>Add a wish!</h4>
+    <form action=""></form>
+    <input id="add-wish-text" type="text" />
+    <button type="submit" id="add-wish-button" class="btn btn-primary">
+      Submit
+    </button>
+  </div>
+
+  <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+  <script src="/config.js"></script>
+
+  <script>
+    const wishlist = [{
+      desc: 'I would like...',
+      bounty: 10000,
+      id: '1234asjoei239fsa9'
+    }]
+
+
+    const wishlistDisplay = document.getElementById('wishlist')
+
+    async function submitBounty(ev) {
+      document.getElementById('order-status').innerText = '';
+      const id = ev.target.id.split('-add-bounty')[0];
+      const newBounty = document.getElementById(id + '-new-bounty').value;
+
+      const orderData = {
+        app_id: APP_ID, // replace with your app id
+        merchant_order_sn: uuidv4(),
+        item_name: 'wish-' + id,
+        order_amount: parseInt(newBounty, 10), // can't be lower than 546
+        nonce_str: new Date().toString(),
+        notice_uri: APP_URL + 'payment-result', // replace with your IP
+        redirect_uri: null, // replace with your IP
+      };
+      console.log('order data', orderData)
+      const orderSnResponse = await fetch(
+        APP_URL + 'create-order', // replace with your IP
+        {
+          method: 'POST',
+          body: JSON.stringify(orderData),
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+        }
+      );
+      const orderSnData = await orderSnResponse.json();
+      if (orderSnData.order_sn) {
+        // console.log('orderSn', orderSnData.order_sn);
+        window.location.href = `https://www.ddpurse.com/desktop/open/order?order_sn=${orderSnData.order_sn}`;
+      } else
+        document.getElementById('order-status').innerText =
+        'error: ' + orderSnData.error;
+    };
+
+    function createWish(desc, bounty, id) {
+      wishlistDisplay.insertAdjacentHTML('beforeend',
+        `<li id="${id}" class="list-group-item mb-2 d-flex align-items-center justify-content-between">
+          <h5 id="${id}-bouty" class="mr-2 my-0">${bounty}</h5>
+          <p id="${id}-desc" class="mr-2 my-0">${desc}</p>
+          <div id="${id}-input-group" class="input-group input-group-sm ml-auto justify-content-end">
+            <span class="input-group-text">₿ sats</span>
+            <input id="${id}-new-bounty" style="width: 75px; flex: unset;" type="text" class="form-control"
+              aria-label="Amount in satoshis" />
+            <button id="${id}-add-bounty" class="btn btn-outline-secondary btn-sm" type="button">
+              Add to bounty
+            </button>
+          </div>
+        </li>`
+      )
+      document.getElementById(`${id}-add-bounty`).addEventListener('click', submitBounty)
+    }
+
+    // initial populating
+    wishlist.forEach(wish => {
+      createWish(wish.desc, wish.bounty, wish.id)
+    })
+
+    // get params
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((entry) => {
+      console.log(entry)
+    })
+    const userName = urlParams.get('user_name');
+    document.getElementById('user-name').innerHTML = userName;
+    const userPic = urlParams.get('user_avatar');
+    document.getElementById('user-pic').src = userPic;
+    const userId = urlParams.get('user_open_id');
+
+    // detect autopayment, set autopayment button if needed
+    const hasAutoPayments = urlParams.get('pay_status') == 1;
+    const singlePaymentLimit = urlParams.get('pre_amount')
+    const cumulativePayment = urlParams.get('total_amount')
+    const needToActivate = (!hasAutoPayments || singlePaymentLimit <= 700 || cumulativePayment <= 700)
+    if (!needToActivate) document.getElementById('autopayment-button').style = 'display: none'
+
+    // add wish
+    document.getElementById('add-wish-button').addEventListener('click', () => {
+      const desc = document.getElementById('add-wish-text').value;
+      const id = uuidv4();
+      const bounty = 0;
+      // add to UI
+      createWish(desc, bounty, id);
+      // add to DB
+      wishlist.push({
+        desc,
+        bounty,
+        id
+      });
+    })
+  </script>
+
+  <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
