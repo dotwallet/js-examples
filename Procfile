@@ -1,0 +1,1 @@
+web: cd wishlist npm run start
