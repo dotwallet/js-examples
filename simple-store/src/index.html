@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <title>Login</title>
+</head>
+
+<body>
+  <nav class="navbar navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+      <img src="./assets/logo/awesome-logo.svg" width="30" height="30" alt="">
+    </a>
+  </nav>
+
+  <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
+    <img class="img-fluid" style="max-height: 500px;" src="./assets/logo/default.png" alt="app logo" />
+    <a id="button-link" class="img-fluid m-0">
+      <img src="./assets/dotwallet-login.png" alt="dotwallet-login" />
+    </a>
+  </div>
+
+  <script src="./config.js"></script>
+
+  <script>
+    document.getElementById('button-link').href =
+      `https://www.ddpurse.com/openapi/get_code?app_id=${APP_ID}&redirect_uri=${APP_URL}auth`
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+  </script>
+</body>
+
+</html>

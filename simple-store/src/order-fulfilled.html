@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <title>Order Fulfilled</title>
+</head>
+
+<body>
+  <nav class="navbar navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+      <img src="./assets/logo/awesome-logo.svg" width="30" height="30" alt="" />
+    </a>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a id="store-link" class="nav-link">Store</a></li>
+    </ul>
+  </nav>
+
+  <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
+    <h1>Thank you</h1>
+    <h3>for your purchase of</h3>
+    <ul class="list-group">
+      <p id="item_name" class="list-group-item"></p>
+      <p id="order_amount" class="list-group-item"></p>
+      <a href="" id="pay_txid" class="btn btn-outline-warning">Inspect your transaction on the blockchain</a>
+    </ul>
+
+    <button id="store-onchain" class="btn btn-outline-danger mt-5">
+      record today's banana price on chain
+    </button>
+    <p id="save-data-result"></p>
+  </div>
+  <script src="/config.js"></script>
+
+  <script>
+    document.getElementById('store-link').href =
+      window.location.origin + '/store-front';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const itemName = urlParams.get('item_name');
+    const orderAmount = urlParams.get('order_amount');
+    const txId = urlParams.get('pay_txid');
+    document.getElementById('item_name').innerHTML =
+      'item: ' + itemName || 'transaction failed';
+    document.getElementById('order_amount').innerHTML =
+      'price: ' + orderAmount + ' satoshis';
+    document.getElementById('pay_txid').href =
+      'https://satoshi.io/tx/' + txId;
+    // the params will look like this
+    // http://192.168.1.142:3000/order-fulfilled?app_id=89d001043806644fdb4fb14099ff6be5&order_sn=f16896efdb44b92a56589bdb66d19ab6&merchant_order_sn=06ded051-7c48-4389-80db-0791d34b6932&item_name=bananas&receive_address=1G71iLTFCvC9xc4T8CgswwhEKAVJMxGErV&user_refund_address=&order_amount=546&pay_txid=d798da78c8ee31ccd02bdcc2aa11168479bed4b796c066d3d81fdd06e9aa4bcf&status=1&nonce_str=37725297&sign=adef5fc52468ee96c51d5bd231a38f6e93cf34d81a31207b5ba3f746ce942bd3
+
+    // Save on chain example
+    document
+      .getElementById('store-onchain')
+      .addEventListener('click', async () => {
+        const saveDataResponse = await fetch(
+          APP_URL + 'save-data', // replace with your IP
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              bananaPrice: parseInt(orderAmount),
+            }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            },
+          }
+        );
+        const saveDataData = await saveDataResponse.json();
+        console.log('saveDataData', saveDataData);
+        document.getElementById('save-data-result').innerText = saveDataData.txid ||
+          JSON.stringify(saveDataData);
+      });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+  </script>
+</body>
+
+</html>
