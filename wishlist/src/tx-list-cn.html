@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
     <title>交易记录清单</title>
   </head>
 
@@ -11,7 +11,7 @@
     <nav class="navbar navbar navbar-dark bg-dark justify-content-between px-3">
       <a class="navbar-brand" href="/">
         <img
-          src="./assets/logo/awesome-logo.svg"
+          src="/assets/logo/awesome-logo.svg"
           width="30"
           height="30"
           alt=""
@@ -27,7 +27,7 @@
       <ul id="txlist" class="list-group mt-2" style="width: 90%;"></ul>
     </div>
 
-    <script src="./config.js"></script>
+    <script src="/config.js"></script>
 
     <script>
       // on load, call API to get list of all transactions, then load them into a list, with each tx linking to a chain explorer
@@ -56,7 +56,7 @@
             <p class="m-0">${desc}</p>
             <p class="m-0">奖励增加量：<strong>${
               newBounty - previousBounty
-            }</strong> 增加人员：${userName}</p>
+            }</strong>增加人员：${userName}</p>
           </div>
           <div class="d-flex justify-content-between">
             <a href="https://satoshi.io/tx/${saveTxid}">数据上链tx</a>
@@ -70,6 +70,6 @@
       })();
     </script>
 
-    <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>

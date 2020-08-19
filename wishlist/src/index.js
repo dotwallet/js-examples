@@ -500,7 +500,7 @@ const { brotliDecompress } = require('zlib');
     res.sendFile(path.join(__dirname + '/tx-list.html'));
   });
   app.get('/tx-list/cn', async (req, res) => {
-    res.sendFile(path.join(__dirname + '/tx-list.html'));
+    res.sendFile(path.join(__dirname + '/tx-list-cn.html'));
   });
 
   // boiler
