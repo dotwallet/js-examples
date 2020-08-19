@@ -27,51 +27,56 @@ const { brotliDecompress } = require('zlib');
    * ============================AUTHENTICATION============================
    *
    */
+  function authWrapper(lang) {
+    return async function auth(req, res) {
+      // console.log('req, res', req, res);
+      try {
+        const code = req.query.code;
+        console.log('==============got code==============\n', code);
+        const data = {
+          app_id: YOUR_APP_ID,
+          secret: YOUR_APP_SECRET,
+          code: code,
+        };
+        console.log('==============data==============\n', data);
 
-  app.get('/auth', async (req, res) => {
-    // console.log('req, res', req, res);
-    try {
-      const code = req.query.code;
-      console.log('==============got code==============\n', code);
-      const data = {
-        app_id: YOUR_APP_ID,
-        secret: YOUR_APP_SECRET,
-        code: code,
-      };
-      console.log('==============data==============\n', data);
-
-      const accessTokenRequest = await axios.post(
-        'https://www.ddpurse.com/platform/openapi/access_token',
-        data
-      );
-      console.log(
-        '==============access token result==============\n',
-        accessTokenRequest
-      );
-      const accessToken = accessTokenRequest.data.data.access_token;
-      if (accessToken) {
-        const userInfoRequest = await axios.get(
-          'https://www.ddpurse.com/platform/openapi/get_user_info?access_token=' +
-            accessToken
+        const accessTokenRequest = await axios.post(
+          'https://www.ddpurse.com/platform/openapi/access_token',
+          data
         );
         console.log(
-          '==============user info result==============\n',
-          userInfoRequest.data
+          '==============access token result==============\n',
+          accessTokenRequest
         );
-        const userData = userInfoRequest.data.data;
-        res.redirect(
-          url.format({
-            pathname: '/wishlist/',
-            query: {
-              ...userData,
-            },
-          })
-        );
+        const accessToken = accessTokenRequest.data.data.access_token;
+        if (accessToken) {
+          const userInfoRequest = await axios.get(
+            'https://www.ddpurse.com/platform/openapi/get_user_info?access_token=' +
+              accessToken
+          );
+          console.log(
+            '==============user info result==============\n',
+            userInfoRequest.data
+          );
+          const userData = userInfoRequest.data.data;
+          res.redirect(
+            url.format({
+              pathname: '/wishlist/' + lang,
+              query: {
+                ...userData,
+              },
+            })
+          );
+        }
+      } catch (err) {
+        console.log('==============ERROR==============\n', err);
       }
-    } catch (err) {
-      console.log('==============ERROR==============\n', err);
-    }
-  });
+    };
+  }
+
+  app.get('/auth', authWrapper('en'));
+  app.get('/auth-cn', authWrapper('cn'));
+
   let accessTokenStorage = ''; // These would go to your database in a real app
   let refreshTokenStorage = '';
 
@@ -91,9 +96,14 @@ const { brotliDecompress } = require('zlib');
       expiry: response.data.data.expires_in,
     };
   }
-
-  app.get('/wishlist', async (req, res) => {
+  app.get('/login/cn', async (req, res) => {
+    res.sendFile(path.join(__dirname + '/index-cn.html'));
+  });
+  app.get('/wishlist/en', async (req, res) => {
     res.sendFile(path.join(__dirname + '/wishlist.html'));
+  });
+  app.get('/wishlist/cn', async (req, res) => {
+    res.sendFile(path.join(__dirname + '/wishlist-cn.html'));
   });
 
   /**
@@ -486,7 +496,10 @@ const { brotliDecompress } = require('zlib');
     // console.log(txlist);
     res.json(txlist);
   });
-  app.get('/tx-list', async (req, res) => {
+  app.get('/tx-list/en', async (req, res) => {
+    res.sendFile(path.join(__dirname + '/tx-list.html'));
+  });
+  app.get('/tx-list/cn', async (req, res) => {
     res.sendFile(path.join(__dirname + '/tx-list.html'));
   });
 

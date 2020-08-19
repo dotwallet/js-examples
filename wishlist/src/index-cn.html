@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css" />
-    <title>Login</title>
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
+    <title>登录</title>
   </head>
 
   <body>
     <nav class="navbar navbar navbar-dark bg-dark justify-content-between px-3">
       <a class="navbar-brand" href="/">
         <img
-          src="./assets/logo/awesome-logo.svg"
+          src="/assets/logo/awesome-logo.svg"
           width="30"
           height="30"
           alt=""
         />
       </a>
-      <a class="nav-item nav-pills" href="/login/cn">
-        中文
+      <a class="nav-item nav-pills" href="/">
+        English
       </a>
     </nav>
 
@@ -28,22 +28,22 @@
       <img
         class="img-fluid"
         style="max-height: 500px;"
-        src="./assets/logo/default.png"
+        src="/assets/logo/default.png"
         alt="app logo"
       />
       <a id="button-link" class="img-fluid m-0">
-        <img src="./assets/dotwallet-login-en.svg" alt="dotwallet-login" />
+        <img src="/assets/dotwallet-login-zh.svg" alt="dotwallet-login" />
       </a>
     </div>
 
-    <script src="./config.js"></script>
+    <script src="/config.js"></script>
 
     <script>
       document.getElementById(
         'button-link'
-      ).href = `https://www.ddpurse.com/openapi/get_code?app_id=${APP_ID}&redirect_uri=${APP_URL}auth`;
+      ).href = `https://www.ddpurse.com/openapi/get_code?app_id=${APP_ID}&redirect_uri=${APP_URL}auth-cn`;
     </script>
 
-    <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>

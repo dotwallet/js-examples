@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
-    <title>Wishlist</title>
+    <title>愿望清单</title>
   </head>
 
   <body>
@@ -26,13 +26,13 @@
     <div
       class="container d-flex d-flex flex-column align-items-center justify-content-center"
     >
-      <h1 class="mt-3">DotWallet Wishlist</h1>
-      <h5>What would like to see developed on DotWallet?</h5>
+      <h1 class="mt-3">打点愿望清单</h1>
+      <h5>你希望看到在打点上有什么有趣的开发?</h5>
       <p class="mb-1">
-        Vote for a project by adding money to the prize bounty
+        通过增加奖金来为项目投票
       </p>
-      <p>When a developer completes the wish, they will get the funds!</p>
-      <p id="loading">loading...</p>
+      <p>开发者完成愿望后，他们将获得奖励资金！</p>
+      <p id="loading">加载中...</p>
 
       <ul id="wishlist" class="list-group" style="width: 90%;"></ul>
 
@@ -40,11 +40,11 @@
         id="autopayment-button"
         class="btn btn-outline-success btn-sm btn-lg m-2"
         style="display: none;"
-        >Enable auto-payments</a
+        >开启自动支付</a
       >
 
       <p id="order-status"></p>
-      <h4>Add a wish</h4>
+      <h4>添加愿望</h4>
       <form action=""></form>
       <input id="add-wish-text" type="text" />
       <button
@@ -52,15 +52,12 @@
         id="add-wish-button"
         class="mt-2 btn btn-outline-info"
       >
-        Submit
+        提交
       </button>
       <p class="mt-4">
-        Every time someone increases a bounty, we will save the data on the
-        blockchain for auditable accountability.
+        每当有人增加奖励金时，我们都会将数据保存在BSV区块链上，变成可审计的责任追究。
       </p>
-      <p>
-        Check out past transactions <a id="examine-history" href="">here</a>
-      </p>
+      <p>查看过去的交易<a id="examine-history" href="">这里</a></p>
     </div>
 
     <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
@@ -69,7 +66,7 @@
     <script>
       (async () => {
         document.getElementById('examine-history').href =
-          APP_URL + 'tx-list/en';
+          APP_URL + 'tx-list/cn';
 
         // load wishlist from DB
         const wishlistCall = await fetch(APP_URL + 'get-wishlist');
@@ -199,7 +196,7 @@
         // detect autopayment, set autopayment button if needed
         const autopayButton = document.getElementById('autopayment-button');
         autopayButton.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
-      &redirect_uri=${APP_URL}wishlist?user_open_id=${userId}&user_name=${userName}&user_avatar=${userPic}`;
+      &redirect_uri=${APP_URL}wishlist/cn?user_open_id=${userId}&user_name=${userName}&user_avatar=${userPic}`;
 
         const autopayConfirmed = urlParams.get('pay_status') == 1;
         const singlePaymentLimit = urlParams.get('pre_amount');
