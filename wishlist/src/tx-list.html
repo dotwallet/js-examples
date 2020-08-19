@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css" />
-    <title>Login</title>
+    <title>Transaction List</title>
   </head>
 
   <body>
@@ -39,7 +39,14 @@
         console.log(txlist);
 
         function createTxRecord(record) {
-          const { desc, newBounty, previousBounty, saveTxid, txid } = record;
+          const {
+            userName,
+            desc,
+            newBounty,
+            previousBounty,
+            saveTxid,
+            txid,
+          } = record;
           txlistDisplay.insertAdjacentHTML(
             'beforeend',
             `<li
@@ -47,7 +54,9 @@
         >
           <div class="d-flex justify-content-between">
             <p class="m-0">${desc}</p>
-            <p class="m-0">bounty increase: ${newBounty - previousBounty}</p>
+            <p class="m-0">Bounty increased <strong>${
+              newBounty - previousBounty
+            }</strong> by ${userName}</p>
           </div>
           <div class="d-flex justify-content-between">
             <a href="https://satoshi.io/tx/${saveTxid}">data save tx</a>

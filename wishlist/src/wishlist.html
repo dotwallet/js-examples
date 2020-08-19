@@ -26,12 +26,12 @@
     <div
       class="container d-flex d-flex flex-column align-items-center justify-content-center"
     >
-      <h1 class="mt-3">Wishlist</h1>
-      <h2>What would like to see developed on DotWallet?</h2>
-      <p>
-        Vote for a project by adding money to the prize, or add your own wish to
-        the list! When a developer completes the wish, they will get the funds!
+      <h1 class="mt-3">DotWallet Wishlist</h1>
+      <h5>What would like to see developed on DotWallet?</h5>
+      <p class="mb-1">
+        Vote for a project by adding money to the prize bounty
       </p>
+      <p>When a developer completes the wish, they will get the funds!</p>
       <p id="loading">loading...</p>
 
       <ul id="wishlist" class="list-group" style="width: 90%;"></ul>
@@ -44,7 +44,7 @@
       >
 
       <p id="order-status"></p>
-      <h4>Add a wish!</h4>
+      <h4>Add a wish</h4>
       <form action=""></form>
       <input id="add-wish-text" type="text" />
       <button
@@ -56,8 +56,10 @@
       </button>
       <p class="mt-4">
         Every time someone increases a bounty, we will save the data on the
-        blockchain for auditable accountability. Check out past transactions
-        <a id="examine-history" href="">here</a>
+        blockchain for auditable accountability.
+      </p>
+      <p>
+        Check out past transactions <a id="examine-history" href="">here</a>
       </p>
     </div>
 
@@ -86,6 +88,7 @@
 
         /** Optomistically update the UI with the new bounty price */
         function increaseBountyUI(id, original, addAmt) {
+          document.getElementById(id + '-new-bounty').value = '';
           document.getElementById(id + '-bounty').innerText = original + addAmt;
         }
 
