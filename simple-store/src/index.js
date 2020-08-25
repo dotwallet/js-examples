@@ -224,19 +224,14 @@ app.post('/create-autopayment', async (req, res) => {
       '==============orderResponseData==============',
       orderResponseData
     );
-    if (orderResponseData.data && orderResponseData.data.code == 0) {
-      res.json(orderResponseData.data);
-    } else {
-      res.json({
-        error: orderResponseData.msg
-          ? orderResponseData.msg
-          : orderResponseData,
-      });
-      throw orderResponseData;
-    }
+    if (!orderResponseData.data) throw orderResponseData;
+    if (orderResponseData.data.code === -101001) {
+      res.json({ error: 'balance too low' });
+    } else if (orderResponseData.data.code !== 0) throw orderResponseData;
+    else res.json(orderResponseData.data);
   } catch (err) {
     console.log('==============err==============\n', err);
-    res.send('error');
+    res.json({ error: err });
   }
 });
 
