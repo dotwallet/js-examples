@@ -127,7 +127,11 @@ const { brotliDecompress } = require('zlib');
       );
       const orderSnData = orderSnResponse.data;
       console.log('==============orderSnData==============', orderSnData);
-      if (orderSnData.data && orderSnData.data.order_sn) {
+      if (
+        orderSnData.data &&
+        orderSnData.data.code == 0 &&
+        orderSnData.data.order_sn
+      ) {
         res.json({
           order_sn: orderSnData.data.order_sn,
         });
@@ -222,10 +226,10 @@ const { brotliDecompress } = require('zlib');
         '==============autopayment orderResponseData==============',
         orderResponseData
       );
-      if (orderResponseData.code === -101001) {
+      if (orderResponseData.data.code === -101001) {
         res.json({ error: 'balance too low' });
-      }
-      if (orderResponseData.data) {
+      } else if (orderResponseData.data.code !== 0) throw orderResponseData;
+      else if (orderResponseData.data) {
         res.json(orderResponseData.data);
       } else {
         res.json({
