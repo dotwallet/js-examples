@@ -42,7 +42,7 @@ app.get('/auth', async (req, res) => {
     );
     console.log(
       '==============access token result==============\n',
-      accessTokenRequest
+      accessTokenRequest.data
     );
     const accessToken = accessTokenRequest.data.data.access_token;
     if (accessToken) {
@@ -121,7 +121,11 @@ app.post('/create-order', async (req, res) => {
     );
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
-    if (orderSnData.data && orderSnData.data.order_sn) {
+    if (
+      orderSnData.data &&
+      orderSnData.data.code == 0 &&
+      orderSnData.data.order_sn
+    ) {
       res.json({
         order_sn: orderSnData.data.order_sn,
       });
@@ -131,7 +135,7 @@ app.post('/create-order', async (req, res) => {
       }, 1000 * 120);
     } else {
       res.json({
-        error: orderSnData.msg,
+        error: orderSnData.data ? orderSnData.data : orderSnData,
       });
       throw orderSnResponse;
     }
@@ -155,6 +159,8 @@ const orderStatus = async (merchant_order_sn) => {
         merchant_order_sn: merchant_order_sn,
       }
     );
+    if (!orderStatusResponse.data || orderStatusResponse.data.code !== 0)
+      throw orderStatusResponse;
     const orderStatusData = orderStatusResponse.data;
     console.log('==============orderStatus==============\n', orderStatusData);
   } catch (err) {
@@ -212,16 +218,19 @@ app.post('/create-autopayment', async (req, res) => {
       'https://www.ddpurse.com/openapi/pay_small_money',
       orderWithSecret
     );
+    console.log(orderResponse);
     const orderResponseData = orderResponse.data;
     console.log(
       '==============orderResponseData==============',
       orderResponseData
     );
-    if (orderResponseData.data) {
+    if (orderResponseData.data && orderResponseData.data.code == 0) {
       res.json(orderResponseData.data);
     } else {
       res.json({
-        error: orderResponseData.msg,
+        error: orderResponseData.msg
+          ? orderResponseData.msg
+          : orderResponseData,
       });
       throw orderResponseData;
     }
@@ -262,7 +271,7 @@ app.post('/save-data', async (req, res) => {
     const getHostedData = getHostedAccount.data;
     console.log('==============getHostedData==============', getHostedData);
     if (!getHostedData.data.address) {
-      throw getHostedData.msg;
+      throw getHostedData;
     }
     const getBalanceOptions = {
       headers: {
