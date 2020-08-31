@@ -1,5 +1,3 @@
-const { brotliDecompress } = require('zlib');
-
 (async () => {
   const express = require('express');
   const axios = require('axios');
@@ -15,6 +13,7 @@ const { brotliDecompress } = require('zlib');
 
   dotenv.config({ path: './.env' });
   const PORT = process.env.PORT || 3000;
+  const HOST = '0.0.0.0';
   const YOUR_APP_SECRET = process.env.APP_SECRET;
   const YOUR_APP_ID = process.env.APP_ID;
 
@@ -508,7 +507,7 @@ const { brotliDecompress } = require('zlib');
   });
 
   // boiler
-  app.listen(PORT, () =>
+  app.listen(PORT, HOST, () =>
     console.log(
       `DotWallet example app listening at ${
         process.env.NODE_ENV === 'production'
