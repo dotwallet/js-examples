@@ -34,7 +34,7 @@ router.get('/auth', async (ctx, next) => {
   const authResponse = await dotwallet.handleAuthResponse(
     ctx,
     next,
-    'http://localhost:8080/#/game/',
+    `http://localhost:8080/game/`,
     true
   );
   tokenStorage.push({

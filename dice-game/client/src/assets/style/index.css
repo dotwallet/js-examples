@@ -28,10 +28,13 @@
 }
 
 .nav-link {
-  @screen lg {
-    @apply inline-block mt-0;
+  @apply block text-teal-200 mr-4 mt-4;
+}
+@screen lg {
+  .nav-link {
+    @apply inline-block;
+    @apply my-0;
   }
-  @apply block mt-4 text-teal-200 mr-4;
 }
 .nav-link:hover {
   @apply text-white;
