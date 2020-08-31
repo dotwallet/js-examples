@@ -258,7 +258,7 @@ var txListDefault = [
     list: [],
   },
 ];
-const TEXTILE_API = 'https://api.textile.io:3447';
+const TEXTILE_API = 'https://webapi.hub.textile.io:3447';
 const Textile = require('@textile/hub');
 const Client = Textile.Client;
 const ThreadID = Textile.ThreadID;
@@ -315,19 +315,17 @@ const txListSchema = {
   },
 };
 async function setupDB() {
-  const db = await Client.withKeyInfo(
-    {
-      key: process.env.TEXTILE_KEY,
-      secret: process.env.TEXTILE_SECRET,
-    },
-    TEXTILE_API
-  );
+  const db = await Client.withKeyInfo({
+    key: process.env.TEXTILE_KEY,
+    secret: process.env.TEXTILE_SECRET,
+  });
+  console.log(db);
   try {
     // const dbIfno = await db.getDBInfo(threadId);
     // console.log(dbIfno);
     // await db.updateCollection(threadId, 'txlist', txListSchema);
     const threadsList = await db.listThreads();
-    // console.log('threadslist', threadsList);
+    console.log('threadslist', threadsList);
     const exists = threadsList.listList
       .map((thread) => thread.id)
       .includes(process.env.THREAD_ID);
