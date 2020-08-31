@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  @apply bg-primary;
+}
+
+.scroller {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.scroller::-webkit-scrollbar {
+  background-color: black;
+  width: 5px;
+  padding-right: 5px;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background-color: rgb(147, 147, 147);
+}
+
+.nav-link {
+  @screen lg {
+    @apply inline-block mt-0;
+  }
+  @apply block mt-4 text-teal-200 mr-4;
+}
+.nav-link:hover {
+  @apply text-white;
+}
