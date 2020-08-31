@@ -13,14 +13,14 @@
 
   dotenv.config({ path: './.env' });
   const PORT = process.env.PORT || 3000;
-  const HOST = '0.0.0.0';
+  const HOST = process.env.NODE_ENV == 'production' ? '0.0.0.0' : 'localhost';
   const YOUR_APP_SECRET = process.env.APP_SECRET;
   const YOUR_APP_ID = process.env.APP_ID;
 
   app.use(cors());
   app.use(bodyParser.json());
   app.use(express.static('src'));
-
+  let DB;
   /**
    *
    * ============================AUTHENTICATION============================
@@ -362,7 +362,6 @@
     }
     return db;
   }
-  const DB = await setupDB();
 
   // get wishlist
   app.get('/get-wishlist', async (req, res) => {
@@ -516,4 +515,5 @@
       }`
     )
   );
+  DB = await setupDB();
 })();
