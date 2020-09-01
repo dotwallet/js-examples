@@ -19,6 +19,8 @@ app.use(bodyParser());
 const router = new Router();
 onerror(app);
 
+const setupDB = require('./setupDB');
+
 const tokenStorage = [];
 const savedDataTxns = [];
 const paymentHistory = [];

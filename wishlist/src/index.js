@@ -258,7 +258,6 @@ var txListDefault = [
     list: [],
   },
 ];
-const TEXTILE_API = 'https://webapi.hub.textile.io:3447';
 const Textile = require('@textile/hub');
 const Client = Textile.Client;
 const ThreadID = Textile.ThreadID;
