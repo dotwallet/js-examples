@@ -1,45 +1,45 @@
 <template>
   <div class="die-select">
     <img
-      @click="select('one')"
-      :class="selected.one ? 'selected' : ''"
+      @click="select('1')"
+      :class="selected['1'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-1.png"
+      src="../assets/dice/die-1.png"
       alt=""
     />
     <img
-      @click="select('two')"
-      :class="selected.two ? 'selected' : ''"
+      @click="select('2')"
+      :class="selected['2'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-2.png"
+      src="../assets/dice/die-2.png"
       alt=""
     />
     <img
-      @click="select('three')"
-      :class="selected.three ? 'selected' : ''"
+      @click="select('3')"
+      :class="selected['3'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-3.png"
+      src="../assets/dice/die-3.png"
       alt=""
     />
     <img
-      @click="select('four')"
-      :class="selected.four ? 'selected' : ''"
+      @click="select('4')"
+      :class="selected['4'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-4.png"
+      src="../assets/dice/die-4.png"
       alt=""
     />
     <img
-      @click="select('five')"
-      :class="selected.five ? 'selected' : ''"
+      @click="select('5')"
+      :class="selected['5'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-5.png"
+      src="../assets/dice/die-5.png"
       alt=""
     />
     <img
-      @click="select('six')"
-      :class="selected.six ? 'selected' : ''"
+      @click="select('6')"
+      :class="selected['6'] ? 'selected' : ''"
       class="small-die"
-      src="../assets/die-6.png"
+      src="../assets/dice/die-6.png"
       alt=""
     />
   </div>
@@ -50,18 +50,23 @@ export default {
   data() {
     return {
       selected: {
-        one: false,
-        two: false,
-        three: false,
-        four: false,
-        five: false,
-        six: false,
+        '1': false,
+        '2': false,
+        '3': false,
+        '4': false,
+        '5': false,
+        '6': false,
       },
     };
   },
   methods: {
     select(die) {
       this.selected[die] = !this.selected[die];
+      let selectedStr = '';
+      for (const key in this.selected) {
+        if (this.selected[key] === true) selectedStr += key;
+      }
+      this.$emit('select', selectedStr);
     },
   },
 };

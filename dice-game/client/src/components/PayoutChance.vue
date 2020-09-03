@@ -4,27 +4,47 @@
       <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
         <p>Payout</p>
       </div>
-      <div
-        class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1"
-      >
-        <p class="my-0 mx-auto">0.2</p>
+      <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
+        <p class="my-0 mx-auto">{{ payout }}</p>
       </div>
     </div>
     <div class="relative mt-5">
       <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
-        <p>Payout</p>
+        <p>Win Chance</p>
       </div>
-      <div
-        class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1"
-      >
-        <p class="my-0 mx-auto">0.2</p>
+      <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
+        <p class="my-0 mx-auto">{{ winChance }}%</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    winChance() {
+      return Math.round((this.numDieSelected / 6) * 100);
+    },
+    payout() {
+      if (this.numDieSelected === 0) return 0;
+      else {
+        const payout = (this.betAmount / (this.numDieSelected / 6)) * 0.9;
+        const retunStr = payout.toString().substring(0, 7);
+        return retunStr;
+      }
+    },
+  },
+  props: {
+    numDieSelected: {
+      type: Number,
+      default: 0,
+    },
+    betAmount: {
+      type: Number,
+      default: 0,
+    },
+  },
+};
 </script>
 
 <style>

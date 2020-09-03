@@ -2,16 +2,10 @@
   <div class="bet-amount min-w-1/2 lg:min-w-0 lg:w-1/4">
     <div class="relative">
       <div class="bg-tert-light mt-2 px-2 py-1  w-100 rounded-lg">
-        <input
-          v-if="currency === 'BSV'"
-          class="bg-tert-light w-100"
-          v-model="value"
-        />
+        <input v-if="currency === 'BSV'" class="bg-tert-light w-100" v-model="value" />
         <input v-else class="bg-tert-light w-100" v-model="usdValue" />
       </div>
-      <div
-        class="text-white bg-primary-light p-1 rounded-lg flex top-n3px right-0 absolute"
-      >
+      <div class="text-white bg-primary-light p-1 rounded-lg flex top-n3px right-0 absolute">
         <div
           @click="switchCurrency('BSV')"
           class="cursor-pointer px-2 py-1 rounded-xl"
@@ -63,10 +57,10 @@ export default {
   },
   watch: {
     usdValue() {
-      this.$emit('value', this.roundToTenK(this.usdValue / this.rate));
+      this.$emit('bet-amount', this.roundToTenK(this.usdValue / this.rate));
     },
     value() {
-      this.$emit('value', this.value);
+      this.$emit('bet-amount', this.value);
     },
   },
   methods: {
@@ -78,14 +72,13 @@ export default {
       else this.value = this.roundToTenK(this.usdValue / this.rate);
       console.log(this.usdMin, this.usdMax, this.usdValue);
       this.currency = curr;
+      this.$emit('currency', curr);
     },
   },
   mounted() {
-    fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash-sv&vs_currencies=usd'
-    )
-      .then((res) => res.json())
-      .then((data) => {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash-sv&vs_currencies=usd')
+      .then(res => res.json())
+      .then(data => {
         this.rate = data['bitcoin-cash-sv'].usd;
         this.usdMin = Math.round(this.min * this.rate) + 1;
         this.usdMax = Math.round(this.max * this.rate);
