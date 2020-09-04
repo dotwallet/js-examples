@@ -4,9 +4,15 @@ class DBCalls {
     this.threadId = threadId;
   }
   async saveBetRecord(record) {
+    console.log('saveBetRecord', record);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
+
     const diceGameInstance = diceGameInstanceResult.instance;
+    console.log('diceGameInstance', diceGameInstance);
+
     const betRecords = diceGameInstance.betRecords;
+    // console.log('betRecords', betRecords);
+
     betRecords.push(record);
     await this.DB.save(this.threadId, 'DiceGame', [diceGameInstance]);
     return diceGameInstance;

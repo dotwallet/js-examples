@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <roll-result :win-msg="winMsg"></roll-result>
     <big-die
       :roll-result="rollResult"
       :can-roll="canRoll"
@@ -17,8 +18,10 @@ import BigDie from '../components/BigDie';
 import DieSelect from '../components/DieSelect';
 import BetAmount from '../components/BetAmount';
 import PayoutChance from '../components/PayoutChance';
+import RollResult from '../components/RollResult';
+
 import axios from 'axios';
-import { SERVER_URL, APP_ID } from '../config.js';
+import { SERVER_URL, CLIENT_URL, APP_ID } from '../config.js';
 import { v4 as uuid } from 'uuid';
 import store from '../store';
 export default {
@@ -27,6 +30,7 @@ export default {
     DieSelect,
     BetAmount,
     PayoutChance,
+    RollResult,
   },
   computed: {
     canRoll() {
@@ -39,28 +43,55 @@ export default {
     return {
       betAmount: 0,
       currency: 'BSV',
-      rollResult: undefined,
+      rollResult: -1,
       selectedDie: undefined,
+      winMsg: '',
     };
   },
   methods: {
     async roll() {
-      const res = await axios.post(SERVER_URL + '/bet-pay', {
-        orderData: {
-          app_id: APP_ID,
-          merchant_order_sn: uuid(),
-          pre_amount: this.betAmount,
-          user_open_id: store.state.userInfo.user_open_id,
-          item_name: 'bet--' + store.state.userInfo.user_open_id + '--' + new Date(),
-        },
-        userWallet: store.state.userInfo.user_address,
-        betAmount: this.betAmount,
-      });
-      console.log('roll response', res.data);
-      this.rollResult = res.data.roll;
+      try {
+        this.rollResult = -2; //-2 is spinning
+        const res = await axios.post(SERVER_URL + '/bet', {
+          orderData: {
+            app_id: APP_ID,
+            merchant_order_sn: uuid(),
+            pre_amount: parseInt(this.betAmount / 0.00000001), // BSV to satoshi
+            user_open_id: store.state.userInfo.user_open_id,
+            item_name: 'bet--' + store.state.userInfo.user_open_id + '--' + new Date(),
+          },
+          userWallet: store.state.userInfo.user_address,
+          betAmount: this.betAmount,
+          guesses: this.selectedDie,
+        });
+        console.log('roll response', res.data);
+        if (res.data.error) {
+          this.rollResult = -1;
+          if (res.data.error.includes('balance')) {
+            window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
+      &redirect_uri=${CLIENT_URL}/game`;
+            return;
+          } else throw res.data.error;
+        }
+        if (res.data.betRecord.correct) {
+          this.rollResult = res.data.betRecord.roll;
+          console.log('this.rollResult = res.data.roll', this.rollResult, res.data.betRecord.roll);
+
+          this.winMsg = `Congratulations!\n
+          You won ${res.data.betRecord.payoutResult.payoutAmount} BSV!!`;
+        } else {
+          this.failMsg = 'Sorry try again';
+          this.rollResult = -1;
+        }
+      } catch (error) {
+        this.rollResult = -1;
+        console.log('roll request error', error);
+        alert('Error processing request');
+      }
     },
     resetRoll() {
-      this.rollResult = undefined;
+      this.winMsg = '';
+      this.rollResult = -1;
     },
     dieSelect(selection) {
       this.selectedDie = selection;

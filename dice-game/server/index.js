@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3001;
 const APP_SECRET = process.env.APP_SECRET;
 const APP_ID = process.env.APP_ID;
 const DEV_OPEN_ID = process.env.DEV_OPEN_ID;
+const clientURL = process.env.NODE_ENV === 'production' ? '...' : `http://192.168.1.142:8080`;
 
 const DotWallet = require('dotwallet-koa');
 const dotwallet = DotWallet(APP_ID, APP_SECRET);
@@ -42,12 +43,7 @@ router.get('/auth', async (ctx, next) => {
   console.log(
     '++++++++++++++++++++++++++++++++++++++++++++++++auth called++++++++++++++++++++++++++++++++++++++++'
   );
-  const authResponse = await dotwallet.handleAuthResponse(
-    ctx,
-    next,
-    `http://localhost:8080/login`,
-    true
-  );
+  const authResponse = await dotwallet.handleAuthResponse(ctx, next, `${clientURL}/login`, true);
   tokenStorage.push({
     [authResponse.userData.user_open_id]: {
       refreshToken: authResponse.accessData.refresh_token,
@@ -69,17 +65,19 @@ const refreshAccessToken = (refreshTokenStorage) => {
 
 /** converts each character in a string to an ascii number value and sums the total value */
 function asciiSum(str) {
-  return [...str]
-    .map((char) => char.charCodeAt(0))
-    .reduce((current, previous) => previous + current);
+  console.log('asciiSum', str);
+  const toArray = [...str].map((char) => char.charCodeAt(0));
+  console.log(toArray);
+  return toArray.reduce((previous, current) => previous * current);
 }
 function diceRollFromSum(sum) {
+  console.log('diceRollFromSum, sum', sum);
   return (sum % 6) + 1;
 }
-async function payOutBet(payout, txid, address) {
+async function payOutBet(ctx, payout, txid, address) {
   const orderData = {
     app_id: APP_ID,
-    merchant_order_sn: uuidv4(),
+    merchant_order_sn: uuid(),
     item_name: 'payout--' + txid,
     pre_amount: payout,
     user_open_id: DEV_OPEN_ID,
@@ -90,44 +88,54 @@ async function payOutBet(payout, txid, address) {
       },
     ]),
   };
-  const orderResultData = await dotwallet.autopayment(orderData, true);
+  const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
+  console.log('payout orderResultData', orderResultData);
   return orderResultData;
 }
 
-router.post('/bet-pay', async (ctx) => {
+router.post('/bet', async (ctx) => {
   const orderData = ctx.request.body.orderData;
   const userWallet = ctx.request.body.userWallet;
   const betAmount = ctx.request.body.betAmount;
-  const orderResultData = await dotwallet.autopayment(orderData, true);
-
+  const guessesStr = ctx.request.body.guesses;
+  const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
+  console.log('orderResultData', orderResultData);
   if (orderResultData.error || !orderResultData.pay_txid) ctx.body = orderResultData;
   else {
     const userID = orderData.user_open_id;
     const txid = orderResultData.pay_txid;
-    const rollHash = crypto.createHash('sha256', txid + seedHash);
+    const rollHash = crypto
+      .createHash('sha256')
+      .update(txid + seedHash)
+      .digest()
+      .toString('hex');
     const rollSum = asciiSum(rollHash);
     const roll = diceRollFromSum(rollSum);
-    const guesses = orderData.item_name.split('guess-')[1].split('');
+    console.log('roll', roll);
+    console.log('guessesStr', guessesStr);
+    const guesses = guessesStr.split('');
+    console.log('guesses', guesses);
 
     let correct = false;
     guesses.forEach((guess) => {
       if (parseInt(guess, 10) === roll) correct = true;
     });
 
-    let payoutResult = null;
+    let payoutResult = {};
     if (correct) {
-      const payout = (betAmount / (guesses.length / 6)) * 0.9;
-      payoutResult = await payOutBet(payout, txid, userWallet);
+      const payout = (betAmount / 0.00000001 / (guesses.length / 6)) * 0.9;
+      payoutResult = await payOutBet(ctx, payout, txid, userWallet);
+      payoutResult.payoutAmount = payout * 0.00000001;
     }
     const betRecord = {
-      timeStamp: orderData.nonce_str,
+      timeStamp: new Date(),
       betAmount,
       payoutResult,
       txid,
       seedHash,
       rollHash,
       roll,
-      guesses,
+      guesses: guessesStr,
       correct,
       userID,
       userWallet,
@@ -185,7 +193,7 @@ const dailySecret = async function () {
   async function resetSeed() {
     const seed = uuid();
     console.log('new seed', seed);
-    const newSeedHash = crypto.createHash('sha256', seed).digest().toString('hex');
+    const newSeedHash = crypto.createHash('sha256').update(seed).digest().toString('hex');
     console.log('new seedHash', newSeedHash);
     const now = new Date();
     const seedRecord = {
@@ -205,7 +213,7 @@ const dailySecret = async function () {
       await resetSeed();
     }
   }
-  await resetSeed();
+  // await resetSeed();
 
   const todaysSeedInfo = await dbCalls.getTodaysSeed();
   console.log('todaysSeedInfo', todaysSeedInfo);

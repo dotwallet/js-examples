@@ -2,8 +2,8 @@
   <div class="bet-amount min-w-1/2 lg:min-w-0 lg:w-1/4">
     <div class="relative">
       <div class="bg-tert-light mt-2 px-2 py-1  w-100 rounded-lg">
-        <input v-if="currency === 'BSV'" class="bg-tert-light w-100" v-model="value" />
-        <input v-else class="bg-tert-light w-100" v-model="usdValue" />
+        <input v-if="currency === 'BSV'" class="bg-tert-light w-100" v-model.number="value" />
+        <input v-else class="bg-tert-light w-100" v-model.number="usdValue" />
       </div>
       <div class="text-white bg-primary-light p-1 rounded-lg flex top-n3px right-0 absolute">
         <div
@@ -27,7 +27,7 @@
         v-if="currency === 'BSV'"
         :max="max"
         :min="min"
-        :interval="0.0001"
+        :interval="0.00001"
         tooltip="none"
         v-model="value"
       >
@@ -60,6 +60,7 @@ export default {
       this.$emit('bet-amount', this.roundToTenK(this.usdValue / this.rate));
     },
     value() {
+      // if (this.min < this.value < this.max) this.value = parseInt(this.value);
       this.$emit('bet-amount', this.value);
     },
   },
@@ -91,7 +92,7 @@ export default {
       currency: 'BSV',
       rate: 200,
       max: 0.2,
-      min: 0.0001,
+      min: 0.00001,
       usdValue: 20,
       usdMin: 2,
       usdMax: 200,

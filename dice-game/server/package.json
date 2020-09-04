@@ -14,7 +14,7 @@
     "@koa/cors": "^3.1.0",
     "@textile/hub": "^0.6.2",
     "dotenv": "^8.2.0",
-    "dotwallet-koa": "^1.0.1",
+    "dotwallet-koa": "^1.0.31",
     "ip": "^1.1.5",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",

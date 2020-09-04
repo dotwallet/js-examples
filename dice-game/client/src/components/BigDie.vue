@@ -1,44 +1,6 @@
 <template>
   <div class="big-die-div">
-    <div v-if="rollResult !== -1">
-      <img
-        v-show="rollResult === 1"
-        class="big-die"
-        src="../assets/dice/tilted-die-1.png"
-        alt="DIE"
-      />
-      <img
-        v-show="rollResult === 2"
-        class="big-die"
-        src="../assets/dice/tilted-die-2.png"
-        alt="DIE"
-      />
-      <img
-        v-show="rollResult === 3"
-        class="big-die"
-        src="../assets/dice/tilted-die-3.png"
-        alt="DIE"
-      />
-      <img
-        v-show="rollResult === 4"
-        class="big-die"
-        src="../assets/dice/tilted-die-4.png"
-        alt="DIE"
-      />
-      <img
-        v-show="rollResult === 5"
-        class="big-die"
-        src="../assets/dice/tilted-die-5.png"
-        alt="DIE"
-      />
-      <img
-        v-show="rollResult === 6"
-        class="big-die"
-        src="../assets/dice/tilted-die-6.png"
-        alt="DIE"
-      />
-    </div>
-    <div v-else-if="spin">
+    <div v-if="spin">
       <img
         v-show="dieNumber === 1"
         class="big-die animate-spin"
@@ -76,9 +38,48 @@
         alt="DIE"
       />
     </div>
+    <div v-else-if="rollResult > -1">
+      <img
+        v-show="rollResult === 1"
+        class="big-die"
+        src="../assets/dice/tilted-die-1.png"
+        alt="DIE"
+      />
+      <img
+        v-show="rollResult === 2"
+        class="big-die"
+        src="../assets/dice/tilted-die-2.png"
+        alt="DIE"
+      />
+      <img
+        v-show="rollResult === 3"
+        class="big-die"
+        src="../assets/dice/tilted-die-3.png"
+        alt="DIE"
+      />
+      <img
+        v-show="rollResult === 4"
+        class="big-die"
+        src="../assets/dice/tilted-die-4.png"
+        alt="DIE"
+      />
+      <img
+        v-show="rollResult === 5"
+        class="big-die"
+        src="../assets/dice/tilted-die-5.png"
+        alt="DIE"
+      />
+      <img
+        v-show="rollResult === 6"
+        class="big-die"
+        src="../assets/dice/tilted-die-6.png"
+        alt="DIE"
+      />
+    </div>
+
     <img v-else class="big-die" src="../assets/dice/tilted-die-6.png" alt="" />
     <button
-      v-if="rollResult !== -1"
+      v-if="rollResult > -1"
       @click="reset()"
       class="mt-10 bg-tert shadow-light hover:shadow-light2 text-white font-bold py-2 px-4 rounded-full text-2xl"
     >
@@ -112,6 +113,12 @@ export default {
       spin: false,
       dieNumber: 1,
     };
+  },
+  watch: {
+    rollResult() {
+      console.log('roll result', this.rollResult);
+      if (this.rollResult !== -2) this.spin = false;
+    },
   },
   mounted() {},
   methods: {

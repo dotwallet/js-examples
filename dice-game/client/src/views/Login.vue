@@ -3,7 +3,7 @@
     <img class="max-w-md" alt="App Logo" src="../assets/logo-screen.png" />
     <dotwallet-login
       :app-id="APP_ID"
-      :redirect-url="'http://' + SERVER_URL + '/auth'"
+      :redirect-url="SERVER_URL + '/auth'"
       :log="true"
     ></dotwallet-login>
   </div>
