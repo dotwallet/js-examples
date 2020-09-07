@@ -42,20 +42,13 @@ function authWrapper(lang) {
         'https://www.ddpurse.com/platform/openapi/access_token',
         data
       );
-      console.log(
-        '==============access token result==============\n',
-        accessTokenRequest
-      );
+      console.log('==============access token result==============\n', accessTokenRequest.data);
       const accessToken = accessTokenRequest.data.data.access_token;
       if (accessToken) {
         const userInfoRequest = await axios.get(
-          'https://www.ddpurse.com/platform/openapi/get_user_info?access_token=' +
-            accessToken
+          'https://www.ddpurse.com/platform/openapi/get_user_info?access_token=' + accessToken
         );
-        console.log(
-          '==============user info result==============\n',
-          userInfoRequest.data
-        );
+        console.log('==============user info result==============\n', userInfoRequest.data);
         const userData = userInfoRequest.data.data;
         res.redirect(
           url.format({
@@ -82,10 +75,7 @@ async function refreshAccess(refreshToken) {
   const response = await axios.get(
     `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_APP_ID}&refresh_token=${refreshToken}`
   );
-  console.log(
-    '==============refresh response==============\n',
-    response.data.data
-  );
+  console.log('==============refresh response==============\n', response.data.data);
   // These would be wishlistd in database or session in a real app
   accessTokenStorage = response.data.data.access_token;
   refreshTokenStorage = response.data.data.refresh_token;
@@ -125,11 +115,7 @@ app.post('/create-order', async (req, res) => {
     );
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
-    if (
-      orderSnData.data &&
-      orderSnData.data.code == 0 &&
-      orderSnData.data.order_sn
-    ) {
+    if (orderSnData.data && orderSnData.data.code == 0 && orderSnData.data.order_sn) {
       res.json({
         order_sn: orderSnData.data.order_sn,
       });
@@ -190,10 +176,7 @@ function getSignature(orderData, appSecret) {
   str += '&secret=' + secret;
   str = str.toUpperCase();
 
-  const sign = crypto
-    .createHmac('sha256', secret)
-    .update(str, 'utf8')
-    .digest('hex');
+  const sign = crypto.createHmac('sha256', secret).update(str, 'utf8').digest('hex');
 
   return sign;
 }
@@ -207,10 +190,7 @@ app.post('/create-autopayment', async (req, res) => {
   try {
     const orderData = req.body;
     // check if recieve address is dev's own
-    console.log(
-      '==============autopayment orderData==============\n',
-      orderData
-    );
+    console.log('==============autopayment orderData==============\n', orderData);
     const orderWithSecret = {
       ...orderData,
       secret: YOUR_APP_SECRET,
@@ -220,13 +200,10 @@ app.post('/create-autopayment', async (req, res) => {
       orderWithSecret
     );
     const orderResponseData = orderResponse.data;
-    console.log(
-      '==============autopayment orderResponseData==============',
-      orderResponseData
-    );
-    if (orderResponseData.data.code === -101001) {
+    console.log('==============autopayment orderResponseData==============', orderResponseData);
+    if (orderResponseData.code === -101001) {
       res.json({ error: 'balance too low' });
-    } else if (orderResponseData.data.code !== 0) throw orderResponseData;
+    } else if (orderResponseData.code !== 0) throw orderResponseData;
     else if (orderResponseData.data) {
       res.json(orderResponseData.data);
     } else {
@@ -325,9 +302,7 @@ async function setupDB() {
     // await db.updateCollection(threadId, 'txlist', txListSchema);
     const threadsList = await db.listThreads();
     console.log('threadslist', threadsList);
-    const exists = threadsList.listList
-      .map((thread) => thread.id)
-      .includes(process.env.THREAD_ID);
+    const exists = threadsList.listList.map((thread) => thread.id).includes(process.env.THREAD_ID);
     console.log('thread exists', exists);
     if (threadsList.listList.length < 1 || !exists) {
       await initializeDB();
@@ -502,9 +477,7 @@ app.listen(PORT, async () => {
   DB = await setupDB();
   console.log(
     `DotWallet example app listening at ${
-      process.env.NODE_ENV === 'production'
-        ? 'production host'
-        : ip.address() + ':' + PORT
+      process.env.NODE_ENV === 'production' ? 'production host' : ip.address() + ':' + PORT
     }`
   );
 });

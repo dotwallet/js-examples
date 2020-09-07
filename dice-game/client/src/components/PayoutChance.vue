@@ -28,7 +28,8 @@ export default {
     payout() {
       if (this.numDieSelected === 0) return 0;
       else {
-        const payout = (this.betAmount / (this.numDieSelected / 6)) * 0.9;
+        const amt = this.currency === 'BSV' ? this.betAmount : this.betAmount * this.rate;
+        const payout = (amt / (this.numDieSelected / 6)) * 0.9;
         const retunStr = payout.toString().substring(0, 7);
         return retunStr;
       }
@@ -42,6 +43,14 @@ export default {
     betAmount: {
       type: Number,
       default: 0,
+    },
+    currency: {
+      type: String,
+      default: 'BSV',
+    },
+    rate: {
+      type: Number,
+      default: 200,
     },
   },
 };

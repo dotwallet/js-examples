@@ -8,14 +8,12 @@
   </head>
 
   <body>
-    <nav class="navbar navbar navbar-dark bg-dark justify-content-between px-3">
+    <nav
+      class="navbar navbar navbar-dark justify-content-between px-3"
+      style="background-color: #8f532c"
+    >
       <a class="navbar-brand" href="/">
-        <img
-          src="/assets/logo/awesome-logo.svg"
-          height="30px"
-          width="30px"
-          alt=""
-        />
+        <img src="/assets/logo/awesome-logo.svg" height="30px" width="30px" alt="" />
       </a>
       <span class="navbar-nav flex-row align-items-center">
         <p id="user-name" class="mx-2 my-0 nav-item text-light"></p>
@@ -23,23 +21,19 @@
       </span>
     </nav>
 
-    <div
-      class="container d-flex d-flex flex-column align-items-center justify-content-center"
-    >
-      <h1 class="mt-3">打点许愿墙</h1>
+    <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
+      <h1 class="my-3">打点许愿墙</h1>
       <h5>你希望在打点上看到什么样有趣的开发?</h5>
-      <p class="mb-1">
-        通过扩充奖池为项目投票
-      </p>
+      <p class="my-1">通过扩充奖池为项目投票</p>
       <p>开发者完成愿望后，将获得奖励资金！</p>
       <p id="loading">加载中...</p>
 
-      <ul id="wishlist" class="list-group" style="width: 90%;"></ul>
+      <ul id="wishlist" class="list-group" style="width: 90%"></ul>
 
       <a
         id="autopayment-button"
         class="btn btn-outline-success btn-sm btn-lg m-2"
-        style="display: none;"
+        style="display: none"
         >开启自动支付</a
       >
 
@@ -47,16 +41,8 @@
       <h4>添加愿望</h4>
       <form action=""></form>
       <input id="add-wish-text" type="text" />
-      <button
-        type="submit"
-        id="add-wish-button"
-        class="mt-2 btn btn-outline-info"
-      >
-        提交
-      </button>
-      <p class="mt-4">
-        每当奖池扩充时，我们都会将数据保存在BSV区块链上，可在链上审计。
-      </p>
+      <button type="submit" id="add-wish-button" class="mt-2 btn btn-outline-info">提交</button>
+      <p class="mt-4">每当奖池扩充时，我们都会将数据保存在BSV区块链上，可在链上审计。</p>
       <p>查看过去的交易<a id="examine-history" href="">这里</a></p>
     </div>
 
@@ -65,8 +51,7 @@
 
     <script>
       (async () => {
-        document.getElementById('examine-history').href =
-          APP_URL + 'tx-list/cn';
+        document.getElementById('examine-history').href = APP_URL + 'tx-list/cn';
 
         // load wishlist from DB
         const wishlistCall = await fetch(APP_URL + 'get-wishlist');
@@ -109,13 +94,7 @@
             console.log('sendBountyIncreasetoDB responseData', responseData);
           }
           // ...save data to chain, do from server. call here. use the txid
-          async function saveWishlistDataOnChain(
-            desc,
-            userName,
-            previousBounty,
-            newBounty,
-            txid
-          ) {
+          async function saveWishlistDataOnChain(desc, userName, previousBounty, newBounty, txid) {
             const response = await fetch(APP_URL + 'save-data', {
               method: 'POST',
               body: JSON.stringify({
@@ -134,13 +113,7 @@
             if (!responseData[0].txid) alert('error saving data on chain');
           }
           sendBountyIncreasetoDB();
-          saveWishlistDataOnChain(
-            desc,
-            userName,
-            original,
-            original + addAmt,
-            txid
-          );
+          saveWishlistDataOnChain(desc, userName, original, original + addAmt, txid);
         }
 
         async function addWishToDB(wish) {
@@ -156,14 +129,8 @@
         }
         // if redirected from a normal payment, and if it wasn't updated yet, update the local list and DB
         const redirectedNewBountyId = urlParams.get('new-bounty-id');
-        const redirectedNewBountyAmt = parseInt(
-          urlParams.get('new-bounty-amt'),
-          10
-        );
-        const redirectedNewBountyAddAmt = parseInt(
-          urlParams.get('new-bounty-add-amt'),
-          10
-        );
+        const redirectedNewBountyAmt = parseInt(urlParams.get('new-bounty-amt'), 10);
+        const redirectedNewBountyAddAmt = parseInt(urlParams.get('new-bounty-add-amt'), 10);
         const orderSn = urlParams.get('order_sn');
         const txid = urlParams.get('pay_txid');
         if (
@@ -178,11 +145,7 @@
           wishlist.forEach((wish) => {
             if (wish._id === redirectedNewBountyId)
               if (wish.bounty !== redirectedNewBountyAmt) {
-                increaseBountyUI(
-                  redirectedNewBountyId,
-                  wish.bounty,
-                  redirectedNewBountyAddAmt
-                );
+                increaseBountyUI(redirectedNewBountyId, wish.bounty, redirectedNewBountyAddAmt);
                 increaseBountyDB(
                   wish.desc,
                   redirectedNewBountyId,
@@ -201,32 +164,20 @@
         const autopayConfirmed = urlParams.get('pay_status') == 1;
         const singlePaymentLimit = urlParams.get('pre_amount');
         const cumulativePayment = urlParams.get('total_amount');
-        let hasAutoPay =
-          autopayConfirmed &&
-          singlePaymentLimit >= 700 &&
-          cumulativePayment >= 700;
-        if (!hasAutoPay)
-          document.getElementById('autopayment-button').style =
-            'display: initial';
+        let hasAutoPay = autopayConfirmed && singlePaymentLimit >= 700 && cumulativePayment >= 700;
+        if (!hasAutoPay) document.getElementById('autopayment-button').style = 'display: initial';
         autopayButton.addEventListener('click', () => {
           hasAutoPay = true;
-          document.getElementById('autopayment-button').style =
-            'display: hidden';
+          document.getElementById('autopayment-button').style = 'display: hidden';
         });
         const wishlistDisplay = document.getElementById('wishlist');
 
         async function submitBounty(ev) {
           document.getElementById('order-status').innerText = '';
           const id = ev.target.id.split('-add-bounty')[0];
-          const addToBountyAmt = parseInt(
-            document.getElementById(id + '-new-bounty').value,
-            10
-          );
+          const addToBountyAmt = parseInt(document.getElementById(id + '-new-bounty').value, 10);
           const desc = document.getElementById(id + '-desc').innerText;
-          const oldBounty = parseInt(
-            document.getElementById(id + '-bounty').innerText,
-            10
-          );
+          const oldBounty = parseInt(document.getElementById(id + '-bounty').innerText, 10);
           if (!addToBountyAmt || addToBountyAmt === NaN) {
             alert('invalid entry');
             return null;
@@ -255,9 +206,7 @@
           }
           console.log('order data', orderData);
           const orderResponse = await fetch(
-            hasAutoPay
-              ? APP_URL + 'create-autopayment'
-              : APP_URL + 'create-order',
+            hasAutoPay ? APP_URL + 'create-autopayment' : APP_URL + 'create-order',
             {
               method: 'POST',
               body: JSON.stringify(orderData),
@@ -272,20 +221,13 @@
             alert(orderResponseData.error);
             if (orderResponseData.error == 'balance too low') {
               hasAutoPay = false;
-              document.getElementById('autopayment-button').style =
-                'display: initial';
+              document.getElementById('autopayment-button').style = 'display: initial';
             }
           }
           // auto payments success returns pay_txid
           else if (hasAutoPay && orderResponseData.pay_txid) {
             increaseBountyUI(id, oldBounty, addToBountyAmt);
-            increaseBountyDB(
-              desc,
-              id,
-              oldBounty,
-              addToBountyAmt,
-              orderResponseData.pay_txid
-            );
+            increaseBountyDB(desc, id, oldBounty, addToBountyAmt, orderResponseData.pay_txid);
           }
 
           //saving data: for normal payments, on page reload check for payment info and submit then. for autopayments submit on getting peytxid.
@@ -308,9 +250,7 @@
           </div>
         </li>`
           );
-          document
-            .getElementById(`${id}-add-bounty`)
-            .addEventListener('click', submitBounty);
+          document.getElementById(`${id}-add-bounty`).addEventListener('click', submitBounty);
         }
 
         // initial populating
@@ -320,22 +260,20 @@
         document.getElementById('loading').style = 'display:none';
 
         // add wish
-        document
-          .getElementById('add-wish-button')
-          .addEventListener('click', () => {
-            const desc = document.getElementById('add-wish-text').value;
-            // check that desc doesnt already exists
-            const id = uuidv4();
-            const bounty = 0;
-            const wish = { desc, bounty, _id: id };
-            // add to UI
-            createWish(desc, bounty, id);
-            // add to server/DB
-            addWishToDB(wish);
-            // add to local memory wishlist
-            wishlist.push(wish);
-            desc.value = '';
-          });
+        document.getElementById('add-wish-button').addEventListener('click', () => {
+          const desc = document.getElementById('add-wish-text').value;
+          // check that desc doesnt already exists
+          const id = uuidv4();
+          const bounty = 0;
+          const wish = { desc, bounty, _id: id };
+          // add to UI
+          createWish(desc, bounty, id);
+          // add to server/DB
+          addWishToDB(wish);
+          // add to local memory wishlist
+          wishlist.push(wish);
+          desc.value = '';
+        });
       })();
     </script>
 

@@ -1,6 +1,7 @@
 <template>
-  <div class="p-5 flex">
-    <p class="text-5xl text-center text-white">{{ winMsg }}</p>
+  <div v-if="failMsg !== '' || winMsg !== ''" class="p-5 flex">
+    <p class="text-4xl text-center text-white">{{ failMsg }}</p>
+    <p class="text-4xl text-center text-white">{{ winMsg }}</p>
   </div>
 </template>
 
@@ -8,6 +9,10 @@
 export default {
   props: {
     winMsg: {
+      type: String,
+      default: '',
+    },
+    failMsg: {
       type: String,
       default: '',
     },

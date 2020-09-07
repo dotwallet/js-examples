@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <roll-result :win-msg="winMsg"></roll-result>
+    <roll-result :win-msg="winMsg" :fail-msg="failMsg"></roll-result>
     <big-die
       :roll-result="rollResult"
       :can-roll="canRoll"
@@ -8,8 +8,17 @@
       @reset="resetRoll"
     ></big-die>
     <die-select @select="dieSelect"></die-select>
-    <bet-amount @bet-amount="updateBetAmount" @currency="updateCurrency"></bet-amount>
-    <payout-chance :bet-amount="betAmount" :num-die-selected="selectedDie ? selectedDie.length : 0">
+    <bet-amount
+      @bet-amount="updateBetAmount"
+      @rate="updateRate"
+      @currency="updateCurrency"
+    ></bet-amount>
+    <payout-chance
+      :currency="this.currency"
+      :rate="this.rate"
+      :bet-amount="betAmount"
+      :num-die-selected="selectedDie ? selectedDie.length : 0"
+    >
     </payout-chance>
   </div>
 </template>
@@ -43,9 +52,11 @@ export default {
     return {
       betAmount: 0,
       currency: 'BSV',
+      rate: 200,
       rollResult: -1,
       selectedDie: undefined,
       winMsg: '',
+      failMsg: '',
     };
   },
   methods: {
@@ -73,15 +84,12 @@ export default {
             return;
           } else throw res.data.error;
         }
+        this.rollResult = res.data.betRecord.roll;
         if (res.data.betRecord.correct) {
-          this.rollResult = res.data.betRecord.roll;
-          console.log('this.rollResult = res.data.roll', this.rollResult, res.data.betRecord.roll);
-
           this.winMsg = `Congratulations!\n
           You won ${res.data.betRecord.payoutResult.payoutAmount} BSV!!`;
         } else {
           this.failMsg = 'Sorry try again';
-          this.rollResult = -1;
         }
       } catch (error) {
         this.rollResult = -1;
@@ -91,6 +99,7 @@ export default {
     },
     resetRoll() {
       this.winMsg = '';
+      this.failMsg = '';
       this.rollResult = -1;
     },
     dieSelect(selection) {
@@ -101,6 +110,9 @@ export default {
     },
     updateCurrency(curr) {
       this.currency = curr;
+    },
+    updateRate(rate) {
+      this.rate = rate;
     },
   },
 };

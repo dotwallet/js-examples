@@ -8,23 +8,19 @@
   </head>
 
   <body>
-    <nav class="navbar navbar navbar-dark bg-dark justify-content-between px-3">
+    <nav
+      class="navbar navbar navbar-dark justify-content-between px-3"
+      style="background-color: #8f532c"
+    >
       <a class="navbar-brand" href="/">
-        <img
-          src="/assets/logo/awesome-logo.svg"
-          width="30"
-          height="30"
-          alt=""
-        />
+        <img src="/assets/logo/awesome-logo.svg" width="30" height="30" alt="" />
       </a>
     </nav>
 
-    <div
-      class="container d-flex d-flex flex-column align-items-center justify-content-center"
-    >
+    <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
       <h1 class="mt-2">Past transactions</h1>
       <p id="loading">loading...</p>
-      <ul id="txlist" class="list-group mt-2" style="width: 90%;"></ul>
+      <ul id="txlist" class="list-group mt-2" style="width: 90%"></ul>
     </div>
 
     <script src="/config.js"></script>
@@ -39,14 +35,7 @@
         console.log(txlist);
 
         function createTxRecord(record) {
-          const {
-            userName,
-            desc,
-            newBounty,
-            previousBounty,
-            saveTxid,
-            txid,
-          } = record;
+          const { userName, desc, newBounty, previousBounty, saveTxid, txid } = record;
           txlistDisplay.insertAdjacentHTML(
             'beforeend',
             `<li

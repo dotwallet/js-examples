@@ -81,6 +81,7 @@ export default {
       .then(res => res.json())
       .then(data => {
         this.rate = data['bitcoin-cash-sv'].usd;
+        this.$emit('rate', this.rate);
         this.usdMin = Math.round(this.min * this.rate) + 1;
         this.usdMax = Math.round(this.max * this.rate);
         this.usdValue = Math.round(this.value * this.rate);
@@ -91,7 +92,7 @@ export default {
       value: 0.1,
       currency: 'BSV',
       rate: 200,
-      max: 0.2,
+      max: 0.01,
       min: 0.00001,
       usdValue: 20,
       usdMin: 2,
