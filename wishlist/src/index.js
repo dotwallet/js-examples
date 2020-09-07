@@ -115,13 +115,13 @@ app.post('/create-order', async (req, res) => {
     );
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
-    if (orderSnData.data && orderSnData.data.code == 0 && orderSnData.data.order_sn) {
+    if (orderSnData.data && orderSnData.code == 0 && orderSnData.data.order_sn) {
       res.json({
         order_sn: orderSnData.data.order_sn,
       });
       // let's check on the the transaction status after a 2 minute wait
       setTimeout(() => {
-        orderStatus(orderData.merchant_order_sn);
+        orderStatus(orderData.data.merchant_order_sn);
       }, 1000 * 120);
     } else {
       res.json({
