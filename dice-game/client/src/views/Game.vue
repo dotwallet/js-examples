@@ -1,5 +1,5 @@
 <template>
-  <div class="game">
+  <div class="game scroller">
     <roll-result :win-msg="winMsg" :fail-msg="failMsg"></roll-result>
     <big-die
       :roll-result="rollResult"
