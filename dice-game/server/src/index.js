@@ -149,6 +149,8 @@ router.post('/bet', async (ctx) => {
   }
 });
 
+app.use(router.routes()).use(router.allowedMethods());
+
 const dailySecret = async function () {
   async function resetSeed() {
     const seed = uuid();
