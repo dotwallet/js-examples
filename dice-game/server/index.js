@@ -18,7 +18,7 @@ const DEV_OPEN_ID = process.env.DEV_OPEN_ID;
 const clientURL =
   process.env.NODE_ENV === 'production'
     ? 'https://musing-pike-d80e67.netlify.app'
-    : `http://192.168.1.142:8080`;
+    : `http://localhost:8080`;
 
 const DotWallet = require('dotwallet-koa');
 const dotwallet = DotWallet(APP_ID, APP_SECRET);

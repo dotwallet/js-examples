@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="game">
     <roll-result :win-msg="winMsg" :fail-msg="failMsg"></roll-result>
     <big-die
       :roll-result="rollResult"
@@ -119,7 +119,7 @@ export default {
 </script>
 
 <style scoped>
-.about {
-  @apply flex-col flex items-center  bg-primary-black h-full text-white;
+.game {
+  @apply flex-col flex items-center  h-full text-white min-w-full;
 }
 </style>
