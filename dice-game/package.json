@@ -1,0 +1,17 @@
+{
+  "name": "dice-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server:dev": "npm run dev --prefix server/",
+    "client:dev": "npm run serve --prefix client/",
+    "dev": "run-p server:dev client:dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
