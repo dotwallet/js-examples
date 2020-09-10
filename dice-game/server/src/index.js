@@ -149,49 +149,6 @@ router.post('/bet', async (ctx) => {
   }
 });
 
-/**
- * ============================SAVE DATA ON CHAIN============================
- */
-
-router.post('/save-data', async (ctx) => {
-  try {
-    const data = ctx.request.body;
-    // check if recieve address is dev's own
-    console.log('==============data==============\n', data);
-
-    const getBalanceData = await dotwallet.hostedAccountBalance('BSV', true);
-    console.log('==============getBalanceData==============', getBalanceData);
-
-    if (getBalanceData.confirm + getBalanceData.unconfirm < 700)
-      throw 'developer wallet balance too low';
-
-    const saveDataData = await dotwallet.saveData(data, 0, true);
-    console.log('==============saveDataData==============', saveDataData);
-    savedDataTxns.push({
-      ...saveDataData.data,
-      timestamp: new Date(),
-      tag: 'banana-price',
-    });
-    ctx.body - saveDataData.data;
-  } catch (err) {
-    console.log(err.msg, err.data, err.message, err.response);
-    console.log('==============err==============\n', err);
-    ctx.body = err;
-  }
-});
-
-app.use(router.routes()).use(router.allowedMethods());
-
-// check/get hosted account (only need to do once)
-// dotwallet
-//   .getHostedAccount('BSV', true)
-//   .then((getHostedData) =>
-//     console.log(
-//       '==============hosted account status==============',
-//       getHostedData
-//     )
-//   );
-
 const dailySecret = async function () {
   async function resetSeed() {
     const seed = uuid();
