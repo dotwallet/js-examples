@@ -1,9 +1,9 @@
 <template>
   <div class="bet-amount min-w-1/2 lg:min-w-0 lg:w-1/4">
     <div class="relative">
-      <div class="bg-tert-light mt-2 px-2 py-1  w-100 rounded-lg">
-        <input v-if="currency === 'BSV'" class="bg-tert-light w-100" v-model.number="value" />
-        <input v-else class="bg-tert-light w-100" v-model.number="usdValue" />
+      <div class="bg-tert-light mt-2 px-2 py-1 flex flex-col rounded-lg">
+        <input v-if="currency === 'BSV'" class="bg-tert-light flex-grow" v-model.number="value" />
+        <input v-else class="bg-tert-light flex-grow" v-model.number="usdValue" />
       </div>
       <div class="text-white bg-primary-light p-1 rounded-lg flex top-n3px right-0 absolute">
         <div

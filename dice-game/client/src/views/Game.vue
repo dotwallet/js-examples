@@ -7,19 +7,25 @@
       @roll="roll"
       @reset="resetRoll"
     ></big-die>
-    <die-select @select="dieSelect"></die-select>
-    <bet-amount
-      @bet-amount="updateBetAmount"
-      @rate="updateRate"
-      @currency="updateCurrency"
-    ></bet-amount>
-    <payout-chance
-      :currency="this.currency"
-      :rate="this.rate"
-      :bet-amount="betAmount"
-      :num-die-selected="selectedDie ? selectedDie.length : 0"
+    <div
+      class="px-3 sm:px-20 md:px-40 flex flex-col lg:flex-row w-full content-center justify-center"
     >
-    </payout-chance>
+      <die-select class="lg:order-2 self-center lg:m-auto" @select="dieSelect"></die-select>
+      <bet-amount
+        class="lg:order-1 "
+        @bet-amount="updateBetAmount"
+        @rate="updateRate"
+        @currency="updateCurrency"
+      ></bet-amount>
+      <payout-chance
+        class="lg:order-3"
+        :currency="this.currency"
+        :rate="this.rate"
+        :bet-amount="betAmount"
+        :num-die-selected="selectedDie ? selectedDie.length : 0"
+      >
+      </payout-chance>
+    </div>
   </div>
 </template>
 <script>

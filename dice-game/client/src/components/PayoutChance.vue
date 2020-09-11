@@ -30,7 +30,10 @@ export default {
       else {
         const amt = this.currency === 'BSV' ? this.betAmount : this.betAmount * this.rate;
         const payout = (amt / (this.numDieSelected / 6)) * 0.9;
-        const retunStr = payout.toString().substring(0, 7);
+        const retunStr =
+          this.currency === 'BSV'
+            ? payout.toString().substring(0, 7)
+            : payout.toString().substring(0, 4);
         return retunStr;
       }
     },
