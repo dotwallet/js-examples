@@ -89,7 +89,7 @@ export default {
   },
   data() {
     return {
-      value: 0.1,
+      value: 0.005,
       currency: 'BSV',
       rate: 200,
       max: 0.01,
