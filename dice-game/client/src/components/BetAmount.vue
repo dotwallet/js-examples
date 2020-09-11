@@ -50,7 +50,6 @@
 
 <script>
 import VueSlider from 'vue-slider-component';
-import '../assets/style/slider.css';
 export default {
   components: {
     VueSlider,
@@ -103,6 +102,8 @@ export default {
 </script>
 
 <style>
+@import '../assets/style/slider.css';
+
 .bet-amount {
   @apply p-3 m-5 rounded-lg bg-tert shadow-light;
 }
