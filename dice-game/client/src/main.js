@@ -4,6 +4,8 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import './assets/style/index.css';
+import './assets/style/slider.css';
+
 import VueConfetti from 'vue-confetti';
 
 Vue.use(VueConfetti);
