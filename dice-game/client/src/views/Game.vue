@@ -26,6 +26,7 @@
       >
       </payout-chance>
     </div>
+    <bet-history></bet-history>
   </div>
 </template>
 <script>
@@ -34,6 +35,7 @@ import DieSelect from '../components/DieSelect';
 import BetAmount from '../components/BetAmount';
 import PayoutChance from '../components/PayoutChance';
 import RollResult from '../components/RollResult';
+import BetHistory from '../components/BetHistory';
 
 import axios from 'axios';
 import { SERVER_URL, CLIENT_URL, APP_ID } from '../config.js';
@@ -46,6 +48,7 @@ export default {
     BetAmount,
     PayoutChance,
     RollResult,
+    BetHistory,
   },
   computed: {
     canRoll() {

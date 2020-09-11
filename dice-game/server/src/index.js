@@ -149,6 +149,14 @@ router.post('/bet', async (ctx) => {
   }
 });
 
+router.post('/bet-history', async (ctx, next) => {
+  const rangeStart = ctx.request.body.rangeStart;
+  const rangeEnd = ctx.request.body.rangeEnd;
+  const userID = ctx.request.body.userID;
+  const result = await dbCalls.getBetRecords(rangeStart, rangeEnd, userID);
+  ctx.body = result;
+});
+
 app.use(router.routes()).use(router.allowedMethods());
 
 const dailySecret = async function () {
