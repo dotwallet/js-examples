@@ -16,9 +16,9 @@
         ALL BETS
       </button>
     </div>
-    <div>
+    <div class="overflow-x-scroll">
       <div
-        class="grid grid-cols-8 text-gray-500 text-center p-2"
+        class="grid w-max-content grid-cols-8 text-gray-500 text-center p-2"
         v-if="myHistory.length > 0 || allHistory.length > 0"
       >
         <div>Bet amount</div>
@@ -30,9 +30,9 @@
         <div>payout</div>
         <div>payout tx</div>
       </div>
-      <div v-if="mineOrAll === 'mine'">
+      <div v-if="mineOrAll === 'mine'" class="w-max-content">
         <div
-          class="grid grid-cols-8 p-1 text-center mx-2"
+          class="grid  grid-cols-8 p-1 text-center mx-2"
           :class="index % 2 == 0 ? 'bg-gray-800 rounded-md ' : ''"
           v-for="(record, index) in myHistory"
           :key="record.txid"
@@ -47,9 +47,9 @@
           <a :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">inspect</a>
         </div>
       </div>
-      <div v-if="mineOrAll === 'all'">
+      <div v-if="mineOrAll === 'all'" class="w-max-content">
         <div
-          class="grid grid-cols-8 p-1 text-center mx-2"
+          class="grid  grid-cols-8 p-1 text-center mx-2 "
           :class="index % 2 == 0 ? 'bg-gray-800 rounded-md ' : ''"
           v-for="(record, index) in allHistory"
           :key="record.txid"

@@ -39,7 +39,9 @@
 .nav-link:hover {
   @apply text-white;
 }
-
+.w-max-content {
+  width: max-content;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
