@@ -146,6 +146,9 @@ export default {
 
 <style>
 .big-die-div {
-  @apply mt-5 flex flex-col items-center;
+  @apply mt-5 items-center text-center;
+}
+.big-die {
+  margin: auto;
 }
 </style>

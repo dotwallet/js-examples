@@ -129,6 +129,6 @@ export default {
 
 <style scoped>
 .game {
-  @apply flex-col flex items-center  h-full text-white min-w-full;
+  @apply items-center h-full text-white min-w-full;
 }
 </style>
