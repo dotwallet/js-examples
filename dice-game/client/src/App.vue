@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="scroller">
+  <div class="app scroller">
     <the-navbar v-if="!loggedIn" id="nav"> </the-navbar>
     <router-view />
   </div>
