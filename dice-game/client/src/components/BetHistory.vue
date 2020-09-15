@@ -1,67 +1,107 @@
 <template>
-  <div class="w-full bg-gray-900 min-h-screen mt-5">
-    <div class="flex items-center justify-around p-2">
+  <div class="w-full min-h-full bg-gray-900 mt-5 ">
+    <div class="flex items-center justify-center py-2 px-10 ">
       <button
-        class="text-sm border-b-2 py-2"
+        class="text-sm border-b-2 py-2 mx-10"
         :class="mineOrAll === 'mine' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="mine()"
       >
         MY BETS
       </button>
       <button
-        class="text-sm border-b-2 py-2"
+        class="text-sm border-b-2 py-2 mx-10"
         :class="mineOrAll === 'all' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="all()"
       >
         ALL BETS
       </button>
     </div>
-    <div class="overflow-x-scroll">
-      <div
-        class="grid w-max-content grid-cols-8 text-gray-500 text-center p-2"
-        v-if="myHistory.length > 0 || allHistory.length > 0"
-      >
-        <div>Bet amount</div>
-        <div>result</div>
-        <div>guesses</div>
-        <div>roll</div>
-        <div>time</div>
-        <div>bet tx</div>
-        <div>payout</div>
-        <div>payout tx</div>
+    <div class="overflow-x-scroll side-scroller px-3 ">
+      <div class="mx-auto w-max-content">
+        <div class="grid grid-cols-8 py-1 text-center mx-auto p-2 text-gray-700">
+          <div class="grid-label">Bet amount</div>
+          <div class="grid-label">result</div>
+          <div class="grid-label">guesses</div>
+          <div class="grid-label">roll</div>
+          <div class="grid-label">time</div>
+          <div class="grid-label">bet tx</div>
+          <div class="grid-label">result</div>
+          <div class="grid-label">payout tx</div>
+        </div>
       </div>
-      <div v-if="mineOrAll === 'mine'" class="w-max-content">
+
+      <!-- skeleton -->
+      <div v-if="myHistory.length === 0 && allHistory.length === 0" class="w-max-content mx-auto">
         <div
-          class="grid  grid-cols-8 p-1 text-center mx-2"
+          class="grid grid-cols-8 py-1 text-center mx-auto px-2 w-full"
+          :class="
+            index % 2 == 0 ? 'bg-gray-800 rounded-md text-gray-800 animate-pulse' : 'text-gray-900'
+          "
+          v-for="(record, index) in dummyHistory"
+          :key="record.txid"
+        >
+          <div>{{ record.betAmount }}</div>
+          <div>{{ record.correct ? 'win' : 'lose' }}</div>
+          <div>{{ record.guesses }}</div>
+          <div>{{ record.roll }}</div>
+          <div>{{ timeParse(record.timeStamp) }}</div>
+          <a>inspect</a>
+          <div>{{ record.payoutResult.payoutAmount }}</div>
+          <a>inspect</a>
+        </div>
+      </div>
+      <div v-else-if="mineOrAll === 'mine'" class="w-max-content mx-auto">
+        <div
+          class="grid grid-cols-8 py-2 text-center mx-auto px-2 text-gray-500 "
           :class="index % 2 == 0 ? 'bg-gray-800 rounded-md ' : ''"
           v-for="(record, index) in myHistory"
           :key="record.txid"
         >
-          <div>{{ record.betAmount }}</div>
-          <div>{{ record.correct ? 'win' : 'lose' }}</div>
-          <div>{{ record.guesses }}</div>
+          <div class="flex">
+            <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{ record.betAmount }}
+          </div>
+          <div :class="record.correct ? 'text-green-400' : 'text-red-400'">
+            {{ record.correct ? 'win' : 'lose' }}
+          </div>
+          <div>{{ guessesParse(record.guesses) }}</div>
           <div>{{ record.roll }}</div>
           <div>{{ timeParse(record.timeStamp) }}</div>
-          <a :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
-          <div>{{ record.payoutResult.payoutAmount }}</div>
-          <a :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">inspect</a>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
+          <div class="flex" :class="record.correct ? 'text-green-400' : 'text-red-400'">
+            <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{
+              record.correct ? record.payoutResult.payoutAmount : record.betAmount
+            }}
+          </div>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">{{
+            record.correct ? 'inspect' : ''
+          }}</a>
         </div>
       </div>
-      <div v-if="mineOrAll === 'all'" class="w-max-content">
+      <div v-else-if="mineOrAll === 'all'" class="w-max-content mx-auto pb-5">
         <div
-          class="grid  grid-cols-8 p-1 text-center mx-2 "
+          class="grid grid-cols-8 py-2 text-center mx-auto px-2 text-gray-500 "
           :class="index % 2 == 0 ? 'bg-gray-800 rounded-md ' : ''"
           v-for="(record, index) in allHistory"
           :key="record.txid"
         >
-          <div>{{ record.betAmount }}</div>
-          <div>{{ record.correct ? 'win' : 'lose' }}</div>
-          <div>{{ record.guesses }}</div>
+          <div class="flex">
+            <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{ record.betAmount }}
+          </div>
+          <div :class="record.correct ? 'text-green-400' : 'text-red-400'">
+            {{ record.correct ? 'win' : 'lose' }}
+          </div>
+          <div>{{ guessesParse(record.guesses) }}</div>
           <div>{{ record.roll }}</div>
           <div>{{ timeParse(record.timeStamp) }}</div>
-          <a :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
-          <div>{{ record.payoutResult.payoutAmount }}</div>
-          <a :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">inspect</a>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
+          <div class="flex" :class="record.correct ? 'text-green-400' : 'text-red-400'">
+            <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{
+              record.correct ? record.payoutResult.payoutAmount : record.betAmount
+            }}
+          </div>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">{{
+            record.correct ? 'inspect' : ''
+          }}</a>
         </div>
       </div>
     </div>
@@ -71,12 +111,21 @@
 <script>
 import axios from 'axios';
 import { SERVER_URL } from '../config';
+import dummyHistory from '../assets/dummyHistory.json';
 import store from '../store';
 export default {
   mounted() {
     this.getRecords();
   },
   methods: {
+    guessesParse(guessStr) {
+      const split = guessStr.split('');
+      let returnStr = '';
+      for (const letter of split) {
+        returnStr += letter + ', ';
+      }
+      return returnStr.substring(0, returnStr.length - 2);
+    },
     timeParse(time) {
       return time.split('T')[1].substring(0, 7);
     },
@@ -89,6 +138,12 @@ export default {
       this.getRecords();
     },
     async getRecords() {
+      this.loadingBets = true;
+      if (
+        (this.mineOrAll === 'mine' && this.myHistory.length > 0) ||
+        (this.mineOrAll === 'all' && this.allHistory.length > 0)
+      )
+        return;
       const postData = {
         rangeStart: this.rangeStart,
         rangeEnd: this.rangeEnd,
@@ -108,9 +163,17 @@ export default {
       allHistory: [],
       rangeStart: 0,
       rangeEnd: 10,
+      dummyHistory: dummyHistory,
     };
   },
 };
 </script>
 
-<style></style>
+<style>
+.grid-label {
+  @apply mx-3;
+}
+.inspect {
+  @apply underline text-gray-600;
+}
+</style>

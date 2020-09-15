@@ -18,13 +18,25 @@
 }
 
 .scroller::-webkit-scrollbar {
-  background-color: black;
+  @apply bg-gray-900;
   width: 5px;
   padding-right: 5px;
 }
 
 .scroller::-webkit-scrollbar-thumb {
-  background-color: rgb(147, 147, 147);
+  @apply bg-gray-400;
+}
+.side-scroller {
+  overflow-x: scroll;
+}
+.side-scroller::-webkit-scrollbar {
+  @apply bg-gray-900;
+  height: 5px;
+  padding-top: 5px;
+}
+
+.side-scroller::-webkit-scrollbar-thumb {
+  @apply bg-gray-400;
 }
 
 .nav-link {
