@@ -65,12 +65,13 @@
 
         // parse params
         const urlParams = new URLSearchParams(window.location.search);
-        // urlParams.forEach((value, key) => {
-        //   console.log(key + ' : ' + value);
-        // });
-        const userName = urlParams.get('user_name');
-        const userPic = urlParams.get('user_avatar');
-        const userId = urlParams.get('user_open_id');
+        urlParams.forEach((value, key) => {
+          localStorage.setItem(key, value);
+          // console.log(key + ' : ' + value);
+        });
+        const userName = urlParams.get('user_name') || localStorage.getItem('user_name');
+        const userPic = urlParams.get('user_avatar') || localStorage.getItem('user_avatar');
+        const userId = urlParams.get('user_open_id') || localStorage.getItem('user_open_id');
         document.getElementById('user-name').innerHTML = userName;
         document.getElementById('user-pic').src = userPic;
 
@@ -135,18 +136,22 @@
         // detect autopayment, set autopayment button if needed
         const autopayButton = document.getElementById('autopayment-button');
         const autoPayLink = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
-      &redirect_uri=${APP_URL}wishlist/en?user_open_id=${userId}&user_name=${userName}&user_avatar=${userPic}&got_autopay=true`;
+      &redirect_uri=${APP_URL}wishlist/en`;
         autopayButton.href = autoPayLink;
-        const autopayConfirmed = urlParams.get('pay_status') == 1;
-        const singlePaymentLimit = urlParams.get('pre_amount');
-        const cumulativePayment = urlParams.get('total_amount');
-        const gotAutopay = urlParams.get('got_autopay');
+        const autopayConfirmed =
+          urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status');
+        const singlePaymentLimit =
+          urlParams.get('pre_amount') || localStorage.getItem('pre_amount');
+        const cumulativePayment =
+          urlParams.get('total_amount') || localStorage.getItem('total_amount');
+        const gotAutopay = localStorage.getItem('got_autopay') || false;
 
         let hasAutoPay =
           gotAutopay || (autopayConfirmed && singlePaymentLimit >= 700 && cumulativePayment >= 700);
         if (!hasAutoPay) document.getElementById('autopayment-button').style = 'display: initial';
         autopayButton.addEventListener('click', () => {
           hasAutoPay = true;
+          localStorage.setItem('got_autopay', 'true');
           document.getElementById('autopayment-button').style = 'display: hidden';
         });
         const wishlistDisplay = document.getElementById('wishlist');
