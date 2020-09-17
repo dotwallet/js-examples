@@ -9,6 +9,7 @@ const cors = require('cors');
 const url = require('url');
 var ip = require('ip');
 // console.log(ip.address());
+var _ = require('lodash');
 
 dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
@@ -335,8 +336,8 @@ app.get('/get-wishlist', async (req, res) => {
   const wishlistInstanceResult = await DB.findByID(threadId, 'wishlist', '1');
   const wishlistInstance = wishlistInstanceResult.instance;
   const wishlist = wishlistInstance.list;
-  // console.log(wishlist);
-  res.json(wishlist);
+  const sorted = _.orderBy(wishlist, ['bounty'], ['desc']);
+  res.json(sorted);
 });
 // add wish
 app.post('/add-wish', async (req, res) => {

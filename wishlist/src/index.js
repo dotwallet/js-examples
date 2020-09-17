@@ -336,10 +336,7 @@ app.get('/get-wishlist', async (req, res) => {
   const wishlistInstanceResult = await DB.findByID(threadId, 'wishlist', '1');
   const wishlistInstance = wishlistInstanceResult.instance;
   const wishlist = wishlistInstance.list;
-  console.log(wishlist);
   const sorted = _.orderBy(wishlist, ['bounty'], ['desc']);
-  console.log(sorted);
-
   res.json(sorted);
 });
 // add wish
