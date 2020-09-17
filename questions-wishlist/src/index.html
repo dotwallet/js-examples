@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
+    <link rel="icon" href="/assets/logo/favicon.ico" />
+    <title>Login</title>
+  </head>
+
+  <body style="background-color: #8f532c; width: 100vw; height: 100vh">
+    <nav class="navbar navbar navbar-dark justify-content-between px-3">
+      <a class="navbar-brand" href="/">
+        <img src="/assets/logo/awesome-logo.svg" width="30" height="30" alt="" />
+      </a>
+      <a class="nav-link text-white" href="/login/cn"> 中文 </a>
+    </nav>
+
+    <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
+      <img
+        class="img-fluid"
+        style="max-height: 500px"
+        src="/assets/logo/default.png"
+        alt="app logo"
+      />
+      <a id="button-link" class="img-fluid mt-5">
+        <img class="rounded" src="/assets/dotwallet-login-en.svg" alt="dotwallet-login" />
+      </a>
+    </div>
+
+    <script src="/config.js"></script>
+
+    <script>
+      document.getElementById(
+        'button-link'
+      ).href = `https://www.ddpurse.com/openapi/get_code?app_id=${APP_ID}&redirect_uri=${APP_URL}auth`;
+    </script>
+
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
