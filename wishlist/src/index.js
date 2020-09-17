@@ -463,6 +463,7 @@ app.get('/get-txlist', async (req, res) => {
   const txlistInstanceResult = await DB.findByID(threadId, 'txlist', '1');
   const txlistInstance = txlistInstanceResult.instance;
   const txlist = txlistInstance.list;
+  txlist.reverse();
   // console.log(txlist);
   res.json(txlist);
 });
