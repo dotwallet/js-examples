@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css" />
     <link rel="icon" href="/assets/logo/favicon.ico" />
-    <title>许愿墙</title>
+    <title>像CSW提问的问题排版</title>
   </head>
 
   <body>
@@ -23,10 +23,10 @@
     </nav>
 
     <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
-      <h1 class="my-3">打点许愿墙</h1>
-      <h5>你希望在打点上看到什么样有趣的开发?</h5>
+      <h1 class="my-3">打点创新营CSW问答许愿墙</h1>
+      <h5>你希CSW回答什么问题?</h5>
       <p class="my-1">通过扩充奖池为项目投票</p>
-      <p>开发者完成愿望后，将获得奖励资金！</p>
+      <p>哪些问题的奖池最大我们会问CSW哪些问题！</p>
       <p id="loading">加载中...</p>
 
       <ul id="wishlist" class="list-group" style="width: 90%"></ul>
@@ -39,10 +39,10 @@
       >
 
       <p id="order-status"></p>
-      <h4>添加愿望</h4>
+      <h4>添加问题</h4>
       <form action=""></form>
       <input id="add-wish-text" type="text" />
-      <button type="submit" id="add-wish-button" class="mt-2 btn btn-outline-info">提交</button>
+      <button type="submit" id="add-wish-button" class="mt-2 btn btn-outline-info">Submit</button>
       <p class="mt-4">每当奖池扩充时，我们都会将数据保存在BSV区块链上，可在链上审计。</p>
       <p>查看过去的交易<a id="examine-history" href="">这里</a></p>
     </div>
@@ -69,7 +69,6 @@
         const userName = urlParams.get('user_name') || localStorage.getItem('user_name');
         const userPic = urlParams.get('user_avatar') || localStorage.getItem('user_avatar');
         const userId = urlParams.get('user_open_id') || localStorage.getItem('user_open_id');
-
         document.getElementById('user-name').innerHTML = userName;
         document.getElementById('user-pic').src = userPic;
 
@@ -134,9 +133,10 @@
         // detect autopayment, set autopayment button if needed
         const autopayButton = document.getElementById('autopayment-button');
         const autoPayLink = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
-      &redirect_uri=${APP_URL}wishlist/cn`;
+      &redirect_uri=${APP_URL}wishlist/en`;
         autopayButton.href = autoPayLink;
-        urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status') == '1';
+        const autopayConfirmed =
+          urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status') == '1';
         const singlePaymentLimit =
           urlParams.get('pre_amount') || localStorage.getItem('pre_amount');
         const cumulativePayment =
@@ -149,6 +149,7 @@
         autopayButton.addEventListener('click', () => {
           hasAutoPay = true;
           localStorage.setItem('got_autopay', 'true');
+
           document.getElementById('autopayment-button').style = 'display: hidden';
         });
         const wishlistDisplay = document.getElementById('wishlist');
@@ -210,11 +211,11 @@
           <h5 id="${id}-bounty" class="mr-2 my-0">${bounty}</h5>
           <p id="${id}-desc" class="mr-2 my-0">${desc}</p>
           <div id="${id}-input-group" class="input-group input-group-sm ml-auto justify-content-end">
-            <span class="input-group-text">₿ sats</span>
+            <span class="input-group-text">₿聪</span>
             <input id="${id}-new-bounty" style="width: 75px; flex: unset;" type="text" class="form-control"
-              aria-label="Amount in satoshis" />
+              aria-label="金额 （聪）" />
             <button id="${id}-add-bounty" class="btn btn-outline-warning btn-sm" type="button">
-              Add to bounty
+              扩大奖池
             </button>
           </div>
         </li>`
