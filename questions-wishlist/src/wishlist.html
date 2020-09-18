@@ -72,7 +72,6 @@
         const userName = urlParams.get('user_name') || localStorage.getItem('user_name');
         const userPic = urlParams.get('user_avatar') || localStorage.getItem('user_avatar');
         const userId = urlParams.get('user_open_id') || localStorage.getItem('user_open_id');
-        const gotAutopay = urlParams.get('got_autopay');
         document.getElementById('user-name').innerHTML = userName;
         document.getElementById('user-pic').src = userPic;
 
@@ -140,7 +139,7 @@
       &redirect_uri=${APP_URL}wishlist/en`;
         autopayButton.href = autoPayLink;
         const autopayConfirmed =
-          urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status');
+          urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status') == '1';
         const singlePaymentLimit =
           urlParams.get('pre_amount') || localStorage.getItem('pre_amount');
         const cumulativePayment =

@@ -136,7 +136,7 @@
         const autoPayLink = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
       &redirect_uri=${APP_URL}wishlist/cn`;
         autopayButton.href = autoPayLink;
-        urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status');
+        urlParams.get('pay_status') == 1 || localStorage.getItem('pay_status') == '1';
         const singlePaymentLimit =
           urlParams.get('pre_amount') || localStorage.getItem('pre_amount');
         const cumulativePayment =
