@@ -5,11 +5,13 @@
       :app-id="APP_ID"
       :redirect-url="SERVER_URL + '/auth'"
       :log="true"
+      :lang="lang"
     ></dotwallet-login>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { DotwalletLogin } from 'dotwallet-vue';
 import { SERVER_URL, APP_ID } from '../config.js';
 export default {
@@ -17,8 +19,11 @@ export default {
   components: {
     DotwalletLogin,
   },
+  computed: {
+    ...mapState(['lang']),
+  },
   mounted() {
-    console.log(this.SERVER_URL, this.APP_ID);
+    console.log(this.SERVER_URL, this.APP_ID, this.lang);
   },
   data() {
     return {

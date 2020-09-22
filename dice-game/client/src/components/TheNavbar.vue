@@ -1,7 +1,8 @@
 <template>
   <nav class="flex items-center justify-between flex-wrap bg-primary px-5 py-2">
     <img class="h-6 w-6" src="../assets/dice-logo.png" alt="" />
-
+    <a v-if="lang === 'en'" @click="LANG('zh')" class="nav-link cursor-pointer ml-3 mt-0">中文</a>
+    <a v-if="lang === 'zh'" @click="LANG('en')" class="nav-link cursor-pointer ml-3 mt-0">ENG</a>
     <div class="block lg:hidden ml-auto">
       <button
         @click.prevent="showNav = !showNav"
@@ -13,13 +14,12 @@
         </svg>
       </button>
     </div>
+
     <div class="block w-full lg:w-auto lg:flex lg:ml-auto">
       <div v-if="showNav || showNav2" class="text-sm lg:flex lg:flex-grow">
         <router-link class="nav-link" to="/game">{{ game[lang] }}</router-link>
         <router-link class="nav-link" to="/charity">{{ charity[lang] }}</router-link>
         <router-link class="nav-link" to="/fair">{{ fair[lang] }}</router-link>
-        <a v-if="lang === 'en'" @click="LANG('zh')" class="nav-link cursor-pointer">中文</a>
-        <a v-if="lang === 'zh'" @click="LANG('eng')" class="nav-link cursor-pointer">ENG</a>
       </div>
     </div>
   </nav>
