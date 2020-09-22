@@ -2,30 +2,34 @@
   <div class="payout-chance min-w-1/2 lg:min-w-0 lg:w-1/4">
     <div class="relative">
       <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
-        <p>Payout</p>
+        <p>{{ payout[lang] }}</p>
       </div>
       <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
-        <p class="my-0 mx-auto">{{ payout }}</p>
+        <p class="my-0 mx-auto">{{ payoutAmt }}</p>
       </div>
     </div>
     <div class="relative mt-5">
       <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
-        <p>Win Chance</p>
+        <p>{{ winChance[lang] }}</p>
       </div>
       <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
-        <p class="my-0 mx-auto">{{ winChance }}%</p>
+        <p class="my-0 mx-auto">{{ winChancePercent }}%</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import locales from '../assets/locales.json';
+import { mapState } from 'vuex';
 export default {
   computed: {
-    winChance() {
+    ...mapState(['lang']),
+
+    winChancePercent() {
       return Math.round((this.numDieSelected / 6) * 100);
     },
-    payout() {
+    payoutAmt() {
       if (this.numDieSelected === 0) return 0;
       else {
         const amt = this.currency === 'BSV' ? this.betAmount : this.betAmount * this.rate;
@@ -37,6 +41,11 @@ export default {
         return retunStr;
       }
     },
+  },
+  data() {
+    return {
+      ...locales.payoutChance,
+    };
   },
   props: {
     numDieSelected: {

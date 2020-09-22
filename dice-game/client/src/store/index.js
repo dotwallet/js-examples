@@ -9,11 +9,14 @@ const vuexLocal = new VuexPersistence({
 const store = new Vuex.Store({
   state: {
     userInfo: undefined,
+    lang: 'en',
   },
   mutations: {
     USER_INFO(state, userInfo) {
       state.userInfo = userInfo;
-      console.log(state);
+    },
+    LANG(state, lang) {
+      state.lang = lang;
     },
   },
   actions: {},

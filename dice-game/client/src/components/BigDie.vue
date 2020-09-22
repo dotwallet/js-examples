@@ -80,23 +80,25 @@
     <img v-else class="big-die" src="../assets/dice/tilted-die-6.png" alt="" />
     <button
       v-if="rollResult > -1"
-      @click="reset()"
-      class="mt-10 bg-tert shadow-light hover:shadow-light2 text-white font-bold py-2 px-4 rounded-full text-2xl"
+      @click="resetDie()"
+      class="mt-10 bg-tert shadow-light hover:shadow-light2 text-white font-bold py-2 px-4 rounded-full text-2xl uppercase"
     >
-      RESET
+      {{ reset[lang] }}
     </button>
     <button
       v-else
-      @click="roll()"
-      class="mt-10 bg-tert shadow-light hover:shadow-light2 text-white font-bold py-2 px-4 rounded-full text-2xl"
+      @click="rollDie()"
+      class="mt-10 bg-tert shadow-light hover:shadow-light2 text-white font-bold py-2 px-4 rounded-full text-2xl uppercase"
       :class="canRoll ? '' : 'cursor-not-allowed opacity-75'"
     >
-      ROLL
+      {{ roll[lang] }}
     </button>
   </div>
 </template>
 
 <script>
+import locales from '../assets/locales.json';
+import { mapState } from 'vuex';
 export default {
   props: {
     rollResult: {
@@ -109,10 +111,7 @@ export default {
     },
   },
   data() {
-    return {
-      spin: false,
-      dieNumber: 1,
-    };
+    return { ...locales.bigDie, spin: false, dieNumber: 1 };
   },
   watch: {
     rollResult() {
@@ -120,9 +119,9 @@ export default {
       if (this.rollResult !== -2) this.spin = false;
     },
   },
-  mounted() {},
+  computed: { ...mapState(['lang']) },
   methods: {
-    reset() {
+    resetDie() {
       this.$emit('reset');
     },
     spinNumber() {
@@ -133,7 +132,7 @@ export default {
           this.spinNumber();
         }, 200);
     },
-    roll() {
+    rollDie() {
       if (this.canRoll) {
         this.spin = !this.spin;
         this.spinNumber();

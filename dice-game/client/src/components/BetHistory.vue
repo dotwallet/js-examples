@@ -6,27 +6,27 @@
         :class="mineOrAll === 'mine' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="mine()"
       >
-        MY BETS
+        {{ myGames[lang] }}
       </button>
       <button
         class="text-sm border-b-2 py-2 mx-10"
         :class="mineOrAll === 'all' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="all()"
       >
-        ALL BETS
+        {{ allGames[lang] }}
       </button>
     </div>
     <div class="overflow-x-scroll side-scroller px-3 ">
       <div class="mx-auto w-max-content">
         <div class="grid grid-cols-8 py-1 text-center mx-auto p-2 text-gray-700">
-          <div class="grid-label">Bet amount</div>
-          <div class="grid-label">result</div>
-          <div class="grid-label">guesses</div>
-          <div class="grid-label">roll</div>
-          <div class="grid-label">time</div>
-          <div class="grid-label">bet tx</div>
-          <div class="grid-label">result</div>
-          <div class="grid-label">payout tx</div>
+          <div class="grid-label">{{ betAmount[lang] }}</div>
+          <div class="grid-label">{{ result[lang] }}</div>
+          <div class="grid-label">{{ guesses[lang] }}</div>
+          <div class="grid-label">{{ roll[lang] }}</div>
+          <div class="grid-label">{{ time[lang] }}</div>
+          <div class="grid-label">{{ betTx[lang] }}</div>
+          <div class="grid-label">{{ result[lang] }}</div>
+          <div class="grid-label">{{ payoutTx[lang] }}</div>
         </div>
       </div>
 
@@ -66,7 +66,7 @@
           <div>{{ guessesParse(record.guesses) }}</div>
           <div>{{ record.roll }}</div>
           <div>{{ timeParse(record.timeStamp) }}</div>
-          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">{{ inspect[lang] }}</a>
           <div class="flex" :class="record.correct ? 'text-green-400' : 'text-red-400'">
             <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{
               record.correct ? record.payoutResult.payoutAmount : record.betAmount
@@ -93,14 +93,14 @@
           <div>{{ guessesParse(record.guesses) }}</div>
           <div>{{ record.roll }}</div>
           <div>{{ timeParse(record.timeStamp) }}</div>
-          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">inspect</a>
+          <a class="inspect" :href="`https://satoshi.io/tx/${record.txid}`">{{ inspect[lang] }}</a>
           <div class="flex" :class="record.correct ? 'text-green-400' : 'text-red-400'">
             <img src="@/assets/bitcoin-logo.png" alt="BSV" class="mr-2 h-5" />{{
               record.correct ? record.payoutResult.payoutAmount : record.betAmount
             }}
           </div>
           <a class="inspect" :href="`https://satoshi.io/tx/${record.payoutResult.txid}`">{{
-            record.correct ? 'inspect' : ''
+            record.correct ? inspect[lang] : ''
           }}</a>
         </div>
       </div>
@@ -112,10 +112,14 @@
 import axios from 'axios';
 import { SERVER_URL } from '../config';
 import dummyHistory from '../assets/dummyHistory.json';
-import store from '../store';
+import locales from '../assets/locales.json';
+import { mapState } from 'vuex';
 export default {
   mounted() {
     this.getRecords();
+  },
+  computed: {
+    ...mapState(['lang', 'userInfo']),
   },
   methods: {
     guessesParse(guessStr) {
@@ -148,7 +152,7 @@ export default {
         rangeStart: this.rangeStart,
         rangeEnd: this.rangeEnd,
       };
-      if (this.mineOrAll === 'mine') postData.userID = store.state.userInfo.user_open_id;
+      if (this.mineOrAll === 'mine') postData.userID = this.userInfo.user_open_id;
       const res = await axios.post(SERVER_URL + '/bet-history', postData);
       console.log(res.data);
       this.mineOrAll === 'mine'
@@ -158,6 +162,7 @@ export default {
   },
   data() {
     return {
+      ...locales.betHistory,
       mineOrAll: 'all',
       myHistory: [],
       allHistory: [],

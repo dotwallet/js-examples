@@ -1,0 +1,78 @@
+{
+  "betHistory": {
+    "myGames": {
+      "zh": "我的历史游戏",
+      "en": "my games"
+    },
+    "allGames": {
+      "zh": "所有人的历史游戏",
+      "en": "all games"
+    },
+    "inspect": {
+      "zh": "检查",
+      "en": "inspect"
+    },
+    "betAmount": {
+      "zh": "投注金额",
+      "en": "bet amount"
+    },
+    "guesses": {
+      "zh": "猜了的什么",
+      "en": "guesses"
+    },
+    "result": {
+      "zh": "结果",
+      "en": "result"
+    },
+    "roll": {
+      "zh": "落筛子结果",
+      "en": "roll"
+    },
+    "time": {
+      "zh": "时间",
+      "en": "time"
+    },
+    "betTx": {
+      "zh": "投注tx",
+      "en": "bet tx"
+    },
+    "payoutTx": {
+      "zh": "赢奖tx",
+      "en": "payout tx"
+    }
+  },
+  "bigDie": {
+    "roll": {
+      "zh": "掷骰子",
+      "en": "roll"
+    },
+    "reset": {
+      "zh": "重设",
+      "en": "reset"
+    }
+  },
+  "payoutChance": {
+    "payout": {
+      "zh": "奖金",
+      "en": "Payout"
+    },
+    "winChance": {
+      "zh": "中奖概率",
+      "en": "Win Chance"
+    }
+  },
+  "navbar": {
+    "game": {
+      "zh": "游戏",
+      "en": "Game"
+    },
+    "fair": {
+      "zh": "公平",
+      "en": "Fair"
+    },
+    "charity": {
+      "zh": "慈善",
+      "en": "Charity"
+    }
+  }
+}

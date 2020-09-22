@@ -4,11 +4,11 @@ class DBCalls {
     this.threadId = threadId;
   }
   async saveBetRecord(record) {
-    console.log('saveBetRecord', record);
+    // console.log('saveBetRecord', record);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
 
     const diceGameInstance = diceGameInstanceResult.instance;
-    console.log('diceGameInstance', diceGameInstance);
+    // console.log('diceGameInstance', diceGameInstance);
 
     const betRecords = diceGameInstance.betRecords;
     // console.log('betRecords', betRecords);
@@ -18,7 +18,7 @@ class DBCalls {
     return diceGameInstance;
   }
   async getBetRecords(rangeStart, rangeEnd, userID) {
-    console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
+    // console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
 
     const diceGameInstance = diceGameInstanceResult.instance;
@@ -30,18 +30,18 @@ class DBCalls {
     if (userID) {
       let results = [];
       for (const record of betRecords) {
-        console.log('compare ID', record.userID, userID);
+        // console.log('compare ID', record.userID, userID);
         if (results.length >= 10) break;
         if (record.userID === userID) results.push(record);
-        console.log('results', results);
+        // console.log('results', results);
       }
       range = results.splice(rangeStart, rangeEnd);
     } else range = betRecords.slice(rangeStart, rangeEnd);
-    console.log('betRecords selections in range', range);
+    // console.log('betRecords selections in range', range);
     return range;
   }
   async saveSeedRecord(record) {
-    console.log('saveSeedRecord', record);
+    // console.log('saveSeedRecord', record);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
     const diceGameInstance = diceGameInstanceResult.instance;
     const seedRecords = diceGameInstance.seedRecords;
@@ -51,7 +51,7 @@ class DBCalls {
   }
 
   async setTodaysSeed(lastDay, seed, seedHash) {
-    console.log('setTodaysSeed', lastDay, seed, seedHash);
+    // console.log('setTodaysSeed', lastDay, seed, seedHash);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
     const diceGameInstance = diceGameInstanceResult.instance;
     diceGameInstance.lastDay = lastDay;

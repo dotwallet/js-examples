@@ -68,13 +68,11 @@ const refreshAccessToken = (refreshTokenStorage) => {
 
 /** converts each character in a string to an ascii number value and sums the total value */
 function asciiSum(str) {
-  console.log('asciiSum', str);
   const toArray = [...str].map((char) => char.charCodeAt(0));
-  console.log(toArray);
   return toArray.reduce((previous, current) => previous * current);
 }
 function diceRollFromSum(sum) {
-  console.log('diceRollFromSum, sum', sum);
+  // console.log('diceRollFromSum, sum', sum);
   return (sum % 6) + 1;
 }
 async function payOutBet(ctx, payout, txid, address) {
@@ -92,7 +90,7 @@ async function payOutBet(ctx, payout, txid, address) {
     ]),
   };
   const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
-  console.log('payout orderResultData', orderResultData);
+  // console.log('payout orderResultData', orderResultData);
   return orderResultData;
 }
 
@@ -102,23 +100,19 @@ router.post('/bet', async (ctx) => {
   const betAmount = ctx.request.body.betAmount;
   const guessesStr = ctx.request.body.guesses;
   const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
-  console.log('orderResultData', orderResultData);
+  // console.log('orderResultData', orderResultData);
   if (orderResultData.error || !orderResultData.pay_txid) ctx.body = orderResultData;
   else {
     const userID = orderData.user_open_id;
     const txid = orderResultData.pay_txid;
     const rollHash = crypto
       .createHash('sha256')
-      .update(txid + seedHash)
+      .update(txid + guessesStr + seedHash)
       .digest()
       .toString('hex');
     const rollSum = asciiSum(rollHash);
     const roll = diceRollFromSum(rollSum);
-    console.log('roll', roll);
-    console.log('guessesStr', guessesStr);
     const guesses = guessesStr.split('');
-    console.log('guesses', guesses);
-
     let correct = false;
     guesses.forEach((guess) => {
       if (parseInt(guess, 10) === roll) correct = true;
@@ -143,7 +137,7 @@ router.post('/bet', async (ctx) => {
       userID,
       userWallet,
     };
-    console.log('betRecord, orderResultData', betRecord, orderResultData);
+    // console.log('betRecord, orderResultData', betRecord, orderResultData);
     dbCalls.saveBetRecord(betRecord);
     ctx.body = { betRecord, orderResultData };
   }
@@ -162,9 +156,9 @@ app.use(router.routes()).use(router.allowedMethods());
 const dailySecret = async function () {
   async function resetSeed() {
     const seed = uuid();
-    console.log('new seed', seed);
+    // console.log('new seed:\n', seed);
     const newSeedHash = crypto.createHash('sha256').update(seed).digest().toString('hex');
-    console.log('new seedHash', newSeedHash);
+    // console.log('new seedHash:\n', newSeedHash);
     const now = new Date();
     const seedRecord = {
       newSeedHash,
@@ -186,7 +180,7 @@ const dailySecret = async function () {
   // await resetSeed();
 
   const todaysSeedInfo = await dbCalls.getTodaysSeed();
-  console.log('todaysSeedInfo', todaysSeedInfo);
+  console.log('todaysSeedInfo:\n', todaysSeedInfo);
   lastDay = todaysSeedInfo.lastDay;
   seedHash = todaysSeedInfo.seedHash;
   if (lastDay === -1) resetSeed(); // init
