@@ -158,19 +158,21 @@
         const wishlistDisplay = document.getElementById('wishlist');
 
         async function submitBounty(ev) {
-          if (!hasAutoPay) window.location.href = autoPayLink;
-          else {
+          if (!hasAutoPay) {
+            localStorage.setItem('got_autopay', 'true');
+            window.location.href = autoPayLink;
+          } else {
             document.getElementById('order-status').innerText = '';
             const id = ev.target.id.split('-add-bounty')[0];
             const addToBountyAmt = parseInt(document.getElementById(id + '-new-bounty').value, 10);
             const desc = document.getElementById(id + '-desc').innerText;
             const oldBounty = parseInt(document.getElementById(id + '-bounty').innerText, 10);
             if (!addToBountyAmt || addToBountyAmt === NaN) {
-              alert('invalid entry');
+              alert('invalid entry, minimum 700 satoshis');
               return null;
             }
             if (addToBountyAmt < 700) {
-              alert('minimum 700 satoshis');
+              alert('invalid entry, minimum 700 satoshis');
               return null;
             }
             const orderData = {
