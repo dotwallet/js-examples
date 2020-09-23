@@ -88,13 +88,13 @@ module.exports = async function setupDB() {
       await console.log('diceGameInstance', diceGameInstance);
       return { db, threadId };
     }
-    // const dbIfno = await db.getDBInfo(threadId);
+    const dbIfno = await db.getDBInfo(threadId);
     // console.log(dbIfno);
     // await db.updateCollection(threadId, 'txlist', txListSchema);
     const threadsList = await db.listThreads();
     // console.log('threadslist', threadsList);
     const exists = threadsList.listList.map((thread) => thread.id).includes(process.env.THREAD_ID);
-    // console.log('thread exists', exists);
+    console.log('thread exists', exists);
     if (threadsList.listList.length < 1 || !exists) {
       return await initializeDB();
     } else return { db, threadId };

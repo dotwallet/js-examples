@@ -74,5 +74,43 @@
       "zh": "慈善",
       "en": "Charity"
     }
+  },
+  "fair": {
+    "title": {
+      "zh": "基于区块链，透明的公平公正",
+      "en": "Provably fair with blockchain"
+    },
+    "p1": {
+      "zh": "每次您掷骰子时，都会将一笔有注金额大小的交易发送给我们。 我们使用交易TXID、您的筛子猜测、和我们每天生成的一个’秘密种子‘来形成一个哈希（单向加密）",
+      "en": "Each time you play a round, a transaction with the bet amount is sent to us. We use the transaction ID, your die guess, and a secret seed to form a ‘hash’ (one-way encryption)."
+    },
+    "p2": {
+      "zh": "我们先把哈希值转换为数字，并用此数字算出1-6的掷骰数。 用于计算掷骰的算法代码都是开源可审计的。",
+      "en": "The hash is turned into a number and used to determine the roll from 1-6. The algorithm code used to compute the roll is all open source."
+    },
+    "p3": {
+      "zh": "每天我们都会在这里发布前一天的秘密种子。因为我们使用种子的哈希所以今天的算法就可以当日审计，第二天只要确认种子是对的就好",
+      "en": "Every day we will release the previous day’s secret seed code here. Because we use a hash of the seed, you can check today's bets immediately"
+    },
+    "date": {
+      "zh": "日期",
+      "en": "Date"
+    },
+    "seed": {
+      "zh": "种子",
+      "en": "Seed"
+    },
+    "seedHash": {
+      "zh": "种子哈希",
+      "en": "Seed hash"
+    },
+    "today": {
+      "zh": "今天",
+      "en": "today"
+    },
+    "unreleased": {
+      "zh": "未公布",
+      "en": "unreleased"
+    }
   }
 }

@@ -16,9 +16,13 @@
     </div>
 
     <div class="block w-full lg:w-auto lg:flex lg:ml-auto">
-      <div v-if="showNav || showNav2" class="text-sm lg:flex lg:flex-grow">
+      <div
+        v-if="showNav || showNav2"
+        @click.prevent="showNav = false"
+        class="text-sm lg:flex lg:flex-grow"
+      >
         <router-link class="nav-link" to="/game">{{ game[lang] }}</router-link>
-        <router-link class="nav-link" to="/charity">{{ charity[lang] }}</router-link>
+        <!-- <router-link class="nav-link" to="/charity">{{ charity[lang] }}</router-link> -->
         <router-link class="nav-link" to="/fair">{{ fair[lang] }}</router-link>
       </div>
     </div>

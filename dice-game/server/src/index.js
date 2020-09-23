@@ -151,6 +151,12 @@ router.post('/bet-history', async (ctx, next) => {
   ctx.body = result;
 });
 
+router.get('/seed-history', async (ctx, next) => {
+  // console.log('/seed-history');
+  const result = await dbCalls.getSeedRecords();
+  ctx.body = result;
+});
+
 app.use(router.routes()).use(router.allowedMethods());
 
 const dailySecret = async function () {

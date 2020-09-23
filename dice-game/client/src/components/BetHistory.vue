@@ -2,14 +2,14 @@
   <div class="w-full min-h-full bg-gray-900 mt-5 ">
     <div class="flex items-center justify-center py-2 px-10 ">
       <button
-        class="text-sm border-b-2 py-2 mx-10"
+        class="text-sm border-b-2 py-2 mx-10 uppercase"
         :class="mineOrAll === 'mine' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="mine()"
       >
         {{ myGames[lang] }}
       </button>
       <button
-        class="text-sm border-b-2 py-2 mx-10"
+        class="text-sm border-b-2 py-2 mx-10 uppercase"
         :class="mineOrAll === 'all' ? 'border-yellow-300' : 'border-gray-400'"
         @click.prevent="all()"
       >

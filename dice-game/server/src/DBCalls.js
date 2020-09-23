@@ -18,11 +18,11 @@ class DBCalls {
     return diceGameInstance;
   }
   async getBetRecords(rangeStart, rangeEnd, userID) {
-    // console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
+    console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
     const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
 
     const diceGameInstance = diceGameInstanceResult.instance;
-    // console.log('diceGameInstance', diceGameInstance);
+    console.log('diceGameInstance', diceGameInstance);
 
     const betRecords = diceGameInstance.betRecords;
     betRecords.reverse();
@@ -68,6 +68,16 @@ class DBCalls {
       lastDay: diceGameInstance.lastDay,
       seedHash: diceGameInstance.seedHash,
     };
+  }
+  async getSeedRecords() {
+    const diceGameInstanceResult = await this.DB.findByID(this.threadId, 'DiceGame', '1');
+    const diceGameInstance = diceGameInstanceResult.instance;
+    const seedRecords = diceGameInstance.seedRecords;
+    seedRecords.reverse();
+    seedRecords[0].date = 'today';
+    seedRecords[0].seed = 'unreleased';
+    // console.log(seedRecords);
+    return seedRecords;
   }
 }
 
