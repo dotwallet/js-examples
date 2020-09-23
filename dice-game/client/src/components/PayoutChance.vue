@@ -36,8 +36,13 @@ export default {
         const payout = (amt / (this.numDieSelected / 6)) * 0.9;
         const retunStr =
           this.currency === 'BSV'
-            ? payout.toString().substring(0, 7)
-            : payout.toString().substring(0, 4);
+            ? payout.toString().substring(0, 8)
+            : payout.toString().split('.')[0] +
+              '.' +
+              payout
+                .toString()
+                .split('.')[1]
+                .substring(0, 2);
         return retunStr;
       }
     },
