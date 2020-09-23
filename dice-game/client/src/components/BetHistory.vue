@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-full bg-gray-900 mt-5 ">
+  <div class="w-full min-h-full bg-gray-900 mt-10 ">
     <div class="flex items-center justify-center py-2 px-10 ">
       <button
         class="text-sm border-b-2 py-2 mx-10 uppercase"

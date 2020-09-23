@@ -54,6 +54,11 @@
 .w-max-content {
   width: max-content;
 }
+
+.big-label {
+  @apply text-center mx-auto text-xl;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

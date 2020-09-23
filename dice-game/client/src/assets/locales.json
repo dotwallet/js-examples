@@ -1,11 +1,11 @@
 {
   "betHistory": {
     "myGames": {
-      "zh": "我的历史游戏",
+      "zh": "历史游戏",
       "en": "my games"
     },
     "allGames": {
-      "zh": "所有人的历史游戏",
+      "zh": "所有人",
       "en": "all games"
     },
     "inspect": {
@@ -111,6 +111,20 @@
     "unreleased": {
       "zh": "未公布",
       "en": "unreleased"
+    }
+  },
+  "labels": {
+    "selectBetAmt": {
+      "zh": "选择金额",
+      "en": "Select Bet Amount"
+    },
+    "oddsAndPayment": {
+      "zh": "奖金和中奖概率",
+      "en": "Odds and Payment"
+    },
+    "chooseGuess": {
+      "zh": "选择骰子",
+      "en": "Choose Guess"
     }
   }
 }

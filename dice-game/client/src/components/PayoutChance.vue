@@ -1,19 +1,23 @@
 <template>
-  <div class="payout-chance min-w-1/2 lg:min-w-0 lg:w-1/4">
-    <div class="relative">
-      <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
-        <p>{{ payout[lang] }}</p>
+  <div class="min-w-1/2 lg:min-w-0 lg:w-1/4">
+    <h1 class="big-label">{{ oddsAndPayment[lang] }}</h1>
+
+    <div class="payout-chance mx-5 md:mx-0 ">
+      <div class="relative">
+        <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
+          <p>{{ payout[lang] }}</p>
+        </div>
+        <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
+          <p class="my-0 mx-auto">{{ payoutAmt }}</p>
+        </div>
       </div>
-      <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
-        <p class="my-0 mx-auto">{{ payoutAmt }}</p>
-      </div>
-    </div>
-    <div class="relative mt-5">
-      <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
-        <p>{{ winChance[lang] }}</p>
-      </div>
-      <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
-        <p class="my-0 mx-auto">{{ winChancePercent }}%</p>
+      <div class="relative mt-5">
+        <div class="bg-tert-light text-black rounded-lg px-2 py-1 my-2 mr-3">
+          <p>{{ winChance[lang] }}</p>
+        </div>
+        <div class="absolute bg-primary text-white px-2 right-0 top-0 rounded-xl p-1">
+          <p class="my-0 mx-auto">{{ winChancePercent }}%</p>
+        </div>
       </div>
     </div>
   </div>
@@ -50,6 +54,7 @@ export default {
   data() {
     return {
       ...locales.payoutChance,
+      ...locales.labels,
     };
   },
   props: {
@@ -75,6 +80,6 @@ export default {
 
 <style>
 .payout-chance {
-  @apply p-3 m-5 rounded-lg bg-tert shadow-light;
+  @apply p-3 rounded-lg bg-tert shadow-light;
 }
 </style>
