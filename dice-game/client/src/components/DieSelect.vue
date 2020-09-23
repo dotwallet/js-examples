@@ -61,12 +61,19 @@ export default {
   },
   methods: {
     select(die) {
-      this.selected[die] = !this.selected[die];
-      let selectedStr = '';
-      for (const key in this.selected) {
-        if (this.selected[key] === true) selectedStr += key;
+      let dieCount = 0;
+      for (const die in this.selected) {
+        if (this.selected[die]) dieCount++;
       }
-      this.$emit('select', selectedStr);
+
+      if (dieCount < 5 || (dieCount == 5 && this.selected[die])) {
+        this.selected[die] = !this.selected[die];
+        let selectedStr = '';
+        for (const key in this.selected) {
+          if (this.selected[key] === true) selectedStr += key;
+        }
+        this.$emit('select', selectedStr);
+      }
     },
   },
 };
