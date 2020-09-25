@@ -75,15 +75,15 @@ export default {
     switchCurrency(curr) {
       if (curr === 'USD') Math.round((this.usdValue = this.value * this.rate));
       else this.value = this.roundToTenK(this.usdValue / this.rate);
-      console.log(this.usdMin, this.usdMax, this.usdValue);
+      // console.log(this.usdMin, this.usdMax, this.usdValue);
       this.currency = curr;
       this.$emit('currency', curr);
     },
   },
   mounted() {
-    console.log('user data', this.userInfo);
     const preAmount = this.userInfo.pre_amount * 0.00000001;
     if (preAmount < this.max) this.max = preAmount * 1.5;
+    if (this.max > 10000000) this.max = 10000000;
     this.value = this.max / 2;
 
     fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash-sv&vs_currencies=usd')
@@ -104,7 +104,7 @@ export default {
       value: 0.005,
       currency: 'BSV',
       rate: 200,
-      max: 1,
+      max: 0.1,
       min: 0.00001,
       usdValue: 20,
       usdMin: 0.1,

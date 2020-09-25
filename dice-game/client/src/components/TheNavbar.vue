@@ -49,9 +49,7 @@ export default {
     this.onResize();
     window.addEventListener('resize', this.onResize);
   },
-  mounted() {
-    console.log(this.lang);
-  },
+
   data() {
     return {
       ...locales.navbar,

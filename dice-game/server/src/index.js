@@ -6,7 +6,7 @@ const cors = require('@koa/cors');
 const ip = require('ip');
 const Router = require('koa-router');
 const onerror = require('koa-onerror');
-
+const axios = require('axios');
 const crypto = require('crypto');
 const { v4: uuid } = require('uuid');
 
@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3001;
 const APP_SECRET = process.env.APP_SECRET;
 const APP_ID = process.env.APP_ID;
 const DEV_OPEN_ID = process.env.DEV_OPEN_ID;
+const DEV_ADDRESS = process.env.DEV_ADDRESS;
+let API_TOKEN = 'zsHSaj4NSb';
 const clientURL =
   process.env.NODE_ENV === 'production'
     ? 'https://musing-pike-d80e67.netlify.app'
@@ -143,7 +145,7 @@ router.post('/bet', async (ctx) => {
   }
 });
 
-router.post('/bet-history', async (ctx, next) => {
+router.post('/bet-history', async (ctx) => {
   const rangeStart = ctx.request.body.rangeStart;
   const rangeEnd = ctx.request.body.rangeEnd;
   const userID = ctx.request.body.userID;
@@ -151,10 +153,20 @@ router.post('/bet-history', async (ctx, next) => {
   ctx.body = result;
 });
 
-router.get('/seed-history', async (ctx, next) => {
+router.get('/seed-history', async (ctx) => {
   // console.log('/seed-history');
   const result = await dbCalls.getSeedRecords();
   ctx.body = result;
+});
+
+router.get('/check-prize-pool', async (ctx) => {
+  const headers = { token: API_TOKEN };
+  const address = 'https://www.ddpurse.com/platform/openapi/svdb/BSV/address/info';
+  const data = { address: DEV_ADDRESS };
+  console.log(address, data, { headers });
+  const result = await axios.post(address, data, { headers });
+  console.log('/check-max\n', result.data);
+  ctx.body = result.data;
 });
 
 app.use(router.routes()).use(router.allowedMethods());
@@ -198,6 +210,14 @@ const dailySecret = async function () {
   }, 1000 * 60 * 60);
 };
 
+const getToken = async () => {
+  const headers = { appid: APP_ID, appsecret: APP_SECRET };
+  console.log(headers);
+  const result = await axios.get('https://www.ddpurse.com/platform/openapi/svdb/token', headers);
+  console.log('get token', result.data);
+  API_TOKEN = result.data.data;
+};
+
 app.listen(PORT, async () => {
   console.log(
     `DotWallet example app listening at ${
@@ -209,4 +229,5 @@ app.listen(PORT, async () => {
   const DBCalls = require('./DBCalls');
   dbCalls = new DBCalls(DB, dbSetup.threadId);
   dailySecret();
+  // getToken();
 });

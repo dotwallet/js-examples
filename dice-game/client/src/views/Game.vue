@@ -72,12 +72,17 @@ export default {
     };
   },
   methods: {
+    async getPrizePool() {
+      console.log('get prize pool');
+
+      const result = await axios.get(SERVER_URL + '/check-prize-pool');
+      console.log('get prize pool', result.data);
+    },
     async roll() {
       try {
         const preAmount = this.userInfo.pre_amount * 0.00000001;
         if (this.betAmount > preAmount) {
-          window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
-      &redirect_uri=${CLIENT_URL}/game`;
+          this.authorizeAutopay();
           return;
         }
         this.rollResult = -2; //-2 is spinning
@@ -97,8 +102,7 @@ export default {
         if (res.data.error) {
           this.rollResult = -1;
           if (res.data.error.includes('balance') || res.data.error.includes('authorized')) {
-            window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
-      &redirect_uri=${CLIENT_URL}/game`;
+            this.authorizeAutopay();
             return;
           } else throw res.data.error;
         }
@@ -115,6 +119,10 @@ export default {
         console.log('roll request error', error);
         alert('Error processing request');
       }
+    },
+    authorizeAutopay() {
+      window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
+      &redirect_uri=${CLIENT_URL}/game`;
     },
     resetRoll() {
       this.winMsg = '';
@@ -133,6 +141,9 @@ export default {
     updateRate(rate) {
       this.rate = rate;
     },
+  },
+  mounted() {
+    this.getPrizePool();
   },
 };
 </script>
