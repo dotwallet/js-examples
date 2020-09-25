@@ -1,7 +1,7 @@
 <template>
-  <div v-if="failMsg !== '' || winMsg !== ''" class="p-5 flex">
-    <p class="text-4xl text-center text-white">{{ failMsg }}</p>
-    <p class="text-4xl text-center text-white">{{ winMsg }}</p>
+  <div v-if="failMsg !== '' || winMsg !== ''" class="p-5 w-full flex text-white text-center">
+    <p v-if="failMsg !== ''" class="text-4xl m-auto">{{ failMsg }}</p>
+    <p v-if="winMsg !== ''" class="text-4xl  m-auto">{{ winMsg }}</p>
   </div>
 </template>
 

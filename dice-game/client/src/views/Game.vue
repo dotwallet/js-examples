@@ -37,10 +37,11 @@ import PayoutChance from '../components/PayoutChance';
 import RollResult from '../components/RollResult';
 import BetHistory from '../components/BetHistory';
 
+import locales from '../assets/locales.json';
 import axios from 'axios';
 import { SERVER_URL, CLIENT_URL, APP_ID } from '../config.js';
 import { v4 as uuid } from 'uuid';
-import store from '../store';
+import { mapState } from 'vuex';
 export default {
   components: {
     BigDie,
@@ -56,6 +57,7 @@ export default {
         return true;
       } else return false;
     },
+    ...mapState(['lang', 'userInfo']),
   },
   data() {
     return {
@@ -66,6 +68,7 @@ export default {
       selectedDie: undefined,
       winMsg: '',
       failMsg: '',
+      ...locales.rollResult,
     };
   },
   methods: {
@@ -77,17 +80,17 @@ export default {
             app_id: APP_ID,
             merchant_order_sn: uuid(),
             pre_amount: parseInt(this.betAmount / 0.00000001), // BSV to satoshi
-            user_open_id: store.state.userInfo.user_open_id,
-            item_name: 'bet--' + store.state.userInfo.user_open_id + '--' + new Date(),
+            user_open_id: this.userInfo.user_open_id,
+            item_name: 'bet--' + this.userInfo.user_open_id + '--' + new Date(),
           },
-          userWallet: store.state.userInfo.user_address,
+          userWallet: this.userInfo.user_address,
           betAmount: this.betAmount,
           guesses: this.selectedDie,
         });
         console.log('roll response', res.data);
         if (res.data.error) {
           this.rollResult = -1;
-          if (res.data.error.includes('balance')) {
+          if (res.data.error.includes('balance') || res.data.error.includes('authorized')) {
             window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
       &redirect_uri=${CLIENT_URL}/game`;
             return;
@@ -95,10 +98,11 @@ export default {
         }
         this.rollResult = res.data.betRecord.roll;
         if (res.data.betRecord.correct) {
-          this.winMsg = `Congratulations!\n
-          You won ${res.data.betRecord.payoutResult.payoutAmount} BSV!!`;
+          this.winMsg = `${this.congrats[this.lang]} ${
+            res.data.betRecord.payoutResult.payoutAmount
+          } BSV!!`;
         } else {
-          this.failMsg = 'Sorry try again';
+          this.failMsg = this.sorry[this.lang];
         }
       } catch (error) {
         this.rollResult = -1;

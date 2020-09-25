@@ -100,7 +100,7 @@ router.post('/bet', async (ctx) => {
   const betAmount = ctx.request.body.betAmount;
   const guessesStr = ctx.request.body.guesses;
   const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
-  // console.log('orderResultData', orderResultData);
+  console.log('orderResultData', orderResultData);
   if (orderResultData.error || !orderResultData.pay_txid) ctx.body = orderResultData;
   else {
     const userID = orderData.user_open_id;

@@ -126,5 +126,15 @@
       "zh": "选择骰子",
       "en": "Choose Guess"
     }
+  },
+  "rollResult": {
+    "sorry": {
+      "zh": "未中奖，再来一次",
+      "en": "Sorry try again"
+    },
+    "congrats": {
+      "zh": "中奖了！你赢了",
+      "en": "Yay! You won"
+    }
   }
 }
