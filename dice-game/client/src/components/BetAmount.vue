@@ -81,6 +81,11 @@ export default {
     },
   },
   mounted() {
+    console.log('user data', this.userInfo);
+    const preAmount = this.userInfo.pre_amount * 0.00000001;
+    if (preAmount < this.max) this.max = preAmount * 1.5;
+    this.value = this.max / 2;
+
     fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash-sv&vs_currencies=usd')
       .then(res => res.json())
       .then(data => {
@@ -91,7 +96,7 @@ export default {
         this.usdValue = Math.round(this.value * this.rate);
       });
   },
-  computed: { ...mapState(['lang']) },
+  computed: { ...mapState(['lang', 'userInfo']) },
   data() {
     return {
       ...locales.labels,

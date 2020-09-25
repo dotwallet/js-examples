@@ -77,7 +77,7 @@ class DBCalls {
     seedRecords[0].date = 'today';
     seedRecords[0].seed = 'unreleased';
     // console.log(seedRecords);
-    return seedRecords;
+    return seedRecords.slice(0, seedRecords.length >= 100 ? 100 : seedRecords.length);
   }
 }
 

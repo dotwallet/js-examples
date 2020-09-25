@@ -74,6 +74,12 @@ export default {
   methods: {
     async roll() {
       try {
+        const preAmount = this.userInfo.pre_amount * 0.00000001;
+        if (this.betAmount > preAmount) {
+          window.location.href = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
+      &redirect_uri=${CLIENT_URL}/game`;
+          return;
+        }
         this.rollResult = -2; //-2 is spinning
         const res = await axios.post(SERVER_URL + '/bet', {
           orderData: {

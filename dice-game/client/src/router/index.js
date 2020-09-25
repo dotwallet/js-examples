@@ -14,8 +14,8 @@ const getLoginQueries = function(to, from, next) {
   } else next();
 };
 const checkLogin = function(to, from, next) {
+  // console.log(store.state.userInfo);
   if (!store.state.userInfo) {
-    console.log(store.state.userInfo);
     next({ name: 'Login' });
   } else next();
 };
