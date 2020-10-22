@@ -10,6 +10,13 @@ module.exports = {
         'primary-black': '#230D21',
         tert: '#59BCC8',
         'tert-light': '#AAD8DD',
+        'smoke-darkest': 'rgba(0, 0, 0, 0.9)',
+        'smoke-darker': 'rgba(0, 0, 0, 0.75)',
+        'smoke-dark': 'rgba(0, 0, 0, 0.6)',
+        smoke: 'rgba(0, 0, 0, 0.5)',
+        'smoke-light': 'rgba(0, 0, 0, 0.4)',
+        'smoke-lighter': 'rgba(0, 0, 0, 0.25)',
+        'smoke-lightest': 'rgba(0, 0, 0, 0.1)',
       },
       boxShadow: {
         light: '0px 0px 10px 0px rgba(247, 248, 239, 0.5)',

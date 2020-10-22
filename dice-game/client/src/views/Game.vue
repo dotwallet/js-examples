@@ -57,7 +57,7 @@ export default {
         return true;
       } else return false;
     },
-    ...mapState(['lang', 'userInfo']),
+    ...mapState(['lang', 'userInfo', 'firstTime']),
   },
   data() {
     return {
@@ -101,7 +101,13 @@ export default {
         console.log('roll response', res.data);
         if (res.data.error) {
           this.rollResult = -1;
-          if (res.data.error.includes('balance') || res.data.error.includes('authorized')) {
+          if (res.data.error.includes('pre_amount')) {
+            this.$emit('limit-alert');
+            return;
+          } else if (
+            res.data.error.includes('balance') || // show alert to add to balance
+            res.data.error.includes('authorized') // directly redirect
+          ) {
             this.authorizeAutopay();
             return;
           } else throw res.data.error;
@@ -143,6 +149,12 @@ export default {
     },
   },
   mounted() {
+    // if first time, show explanation.
+    console.log('firstTime,', this.firstTime);
+    if (this.firstTime) {
+      this.$emit('tutorial-alert');
+      // this.$emit('limit-alert');
+    }
     this.getPrizePool();
   },
 };

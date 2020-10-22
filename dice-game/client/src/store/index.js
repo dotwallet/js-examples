@@ -10,6 +10,7 @@ const store = new Vuex.Store({
   state: {
     userInfo: undefined,
     lang: 'en',
+    firstTime: true,
   },
   mutations: {
     USER_INFO(state, userInfo) {
@@ -17,6 +18,9 @@ const store = new Vuex.Store({
     },
     LANG(state, lang) {
       state.lang = lang;
+    },
+    FIRST_TIME(state, bool) {
+      state.firstTime = bool;
     },
   },
   actions: {},

@@ -15,7 +15,7 @@
     "@textile/hub": "^0.7.1",
     "axios": "^0.20.0",
     "dotenv": "^8.2.0",
-    "dotwallet-koa": "^1.0.335",
+    "dotwallet-koa": "^1.0.341",
     "ip": "^1.1.5",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",

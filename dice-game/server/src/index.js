@@ -91,7 +91,7 @@ async function payOutBet(ctx, payout, txid, address) {
       },
     ]),
   };
-  const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
+  const orderResultData = await dotwallet.autopayment(orderData, true);
   // console.log('payout orderResultData', orderResultData);
   return orderResultData;
 }
@@ -101,7 +101,7 @@ router.post('/bet', async (ctx) => {
   const userWallet = ctx.request.body.userWallet;
   const betAmount = ctx.request.body.betAmount;
   const guessesStr = ctx.request.body.guesses;
-  const orderResultData = await dotwallet.autopayment(ctx, orderData, undefined, true);
+  const orderResultData = await dotwallet.autopayment(orderData, true);
   console.log('orderResultData', orderResultData);
   if (orderResultData.error || !orderResultData.pay_txid) ctx.body = orderResultData;
   else {
