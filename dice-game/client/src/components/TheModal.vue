@@ -15,7 +15,7 @@
           />
         </svg>
       </span>
-      <p class="py-5">{{ msg }}</p>
+      <p style="white-space: pre-line;" class="py-5">{{ msg }}</p>
       <button
         @click="modalButton"
         class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"

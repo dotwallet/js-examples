@@ -153,7 +153,6 @@ export default {
     console.log('firstTime,', this.firstTime);
     if (this.firstTime) {
       this.$emit('tutorial-alert');
-      // this.$emit('limit-alert');
     }
     this.getPrizePool();
   },
