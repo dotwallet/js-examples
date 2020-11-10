@@ -23,16 +23,17 @@
       console.log(state, savedState);
 
       callAuth = async () => {
-        const authResponse = await fetch(`${APP_URL}/auth`, {
+        const authCall = await fetch(`${APP_URL}/auth`, {
           method: 'POST',
           body: JSON.stringify({ code }),
           headers: {
             'Content-type': 'application/json; charset=UTF-8',
           },
         });
-        console.log('authResponse', authResponse);
+        const authResponse = await authCall.json();
+        // console.log('authResponse', authResponse);
         const homepageURL = `${APP_URL}/restricted-page/?name=${authResponse.nickname}&pic=${authResponse.avatar}&user_id=${authResponse.id}`;
-        console.log('homepageURL', homepageURL);
+        // console.log('homepageURL', homepageURL);
         window.location.href = homepageURL;
       };
       if (state != savedState) {

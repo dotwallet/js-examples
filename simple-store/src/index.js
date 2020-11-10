@@ -55,9 +55,7 @@ app.post('/auth', async (req, res) => {
       };
       const userInfoRequest = await axios(`${dotWalletAPI}/v1/user/get_user_info`, userInfoOptions);
       console.log('==============user info result==============\n', userInfoRequest.data);
-      res.json({
-        ...userInfoRequest.data.data,
-      });
+      res.json({ ...userInfoRequest.data.data });
     }
   } catch (err) {
     console.log('==============ERROR==============\n', err);
