@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Redirect</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar navbar-dark bg-dark">
+      <a class="navbar-brand" href="/">
+        <img src="./assets/logo/awesome-logo.svg" width="30" height="30" alt="" />
+      </a>
+    </nav>
+
+    <script src="./config.js"></script>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const state = urlParams.get('state');
+      const code = urlParams.get('code');
+      const savedState = localStorage.getItem('loginState');
+      console.log(state, savedState);
+
+      callAuth = async () => {
+        const authResponse = await fetch(`${APP_URL}/auth`, {
+          method: 'POST',
+          body: JSON.stringify({ code }),
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+        });
+        console.log('authResponse', authResponse);
+        const homepageURL = `${APP_URL}/restricted-page/?name=${authResponse.nickname}&pic=${authResponse.avatar}&user_id=${authResponse.id}`;
+        console.log('homepageURL', homepageURL);
+        window.location.href = homepageURL;
+      };
+      if (state != savedState) {
+        alert('error validating request');
+      } else {
+        callAuth();
+      }
+    </script>
+  </body>
+</html>

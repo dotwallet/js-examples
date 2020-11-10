@@ -5,14 +5,16 @@ const dotenv = require('dotenv');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const url = require('url');
-var ip = require('ip');
-console.log(ip.address());
 
 dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
-const YOUR_APP_SECRET = process.env.APP_SECRET;
-const YOUR_APP_ID = process.env.APP_ID;
+const YOUR_CLIENT_SECRET = process.env.CLIENT_SECRET;
+const YOUR_CLIENT_ID = process.env.CLIENT_ID;
+const dotWalletAPI = `https://staging.api.ddpurse.com`;
+
+const url = require('url');
+var ip = require('ip');
+const APP_URL = `http://${ip.address()}:${PORT}`;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,48 +25,39 @@ app.use(express.static('src'));
  * ============================AUTHENTICATION============================
  *
  */
-
-app.get('/auth', async (req, res) => {
+app.get('/redirect', async (req, res) => {
+  res.sendFile(path.join(__dirname + '/redirect.html'));
+});
+app.post('/auth', async (req, res) => {
   // console.log('req, res', req, res);
   try {
-    const code = req.query.code;
+    ``;
+    const code = req.body.code;
     console.log('==============got code==============\n', code);
     const data = {
-      app_id: YOUR_APP_ID,
-      secret: YOUR_APP_SECRET,
+      client_id: YOUR_CLIENT_ID,
+      client_secret: YOUR_CLIENT_SECRET,
+      grant_type: 'authorization_code',
       code: code,
+      redirect_uri: `${APP_URL}/redirect`,
     };
     console.log('==============data==============\n', data);
-
-    const accessTokenRequest = await axios.post(
-      'https://www.ddpurse.com/platform/openapi/access_token',
-      data
-    );
-    console.log(
-      '==============access token result==============\n',
-      accessTokenRequest.data
-    );
+    const accessTokenRequest = await axios.post(`${dotWalletAPI}/v1/oauth2/get_access_token`, data);
+    console.log('==============access token result==============\n', accessTokenRequest.data);
     const accessToken = accessTokenRequest.data.data.access_token;
     if (accessToken) {
-      const userInfoRequest = await axios.get(
-        'https://www.ddpurse.com/platform/openapi/get_user_info?access_token=' +
-          accessToken
-      );
-      console.log(
-        '==============user info result==============\n',
-        userInfoRequest.data
-      );
-
-      res.redirect(
-        url.format({
-          pathname: '/restricted-page/',
-          query: {
-            name: userInfoRequest.data.data.user_name,
-            pic: userInfoRequest.data.data.user_avatar,
-            user_id: userInfoRequest.data.data.user_open_id,
-          },
-        })
-      );
+      const userInfoOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        method: 'POST',
+      };
+      const userInfoRequest = await axios(`${dotWalletAPI}/v1/user/get_user_info`, userInfoOptions);
+      console.log('==============user info result==============\n', userInfoRequest.data);
+      res.json({
+        ...userInfoRequest.data.data,
+      });
     }
   } catch (err) {
     console.log('==============ERROR==============\n', err);
@@ -75,12 +68,9 @@ let refreshTokenStorage = '';
 
 async function refreshAccess(refreshToken) {
   const response = await axios.get(
-    `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_APP_ID}&refresh_token=${refreshToken}`
+    `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_CLIENT_ID}&refresh_token=${refreshToken}`
   );
-  console.log(
-    '==============refresh response==============\n',
-    response.data.data
-  );
+  console.log('==============refresh response==============\n', response.data.data);
   // These would be stored in database or session in a real app
   accessTokenStorage = response.data.data.access_token;
   refreshTokenStorage = response.data.data.refresh_token;
@@ -113,7 +103,7 @@ app.post('/create-order', async (req, res) => {
     console.log('==============orderData==============\n', orderData);
     const signedOrder = {
       ...orderData,
-      sign: getSignature(orderData, YOUR_APP_SECRET),
+      sign: getSignature(orderData, YOUR_CLIENT_SECRET),
     };
     const orderSnResponse = await axios.post(
       'https://www.ddpurse.com/platform/openapi/create_order',
@@ -121,11 +111,7 @@ app.post('/create-order', async (req, res) => {
     );
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
-    if (
-      orderSnData.data &&
-      orderSnData.data.code == 0 &&
-      orderSnData.data.order_sn
-    ) {
+    if (orderSnData.data && orderSnData.data.code == 0 && orderSnData.data.order_sn) {
       res.json({
         order_sn: orderSnData.data.order_sn,
       });
@@ -154,13 +140,12 @@ const orderStatus = async (merchant_order_sn) => {
     const orderStatusResponse = await axios.post(
       'https://www.ddpurse.com/platform/openapi/search_order',
       {
-        app_id: YOUR_APP_ID,
-        secret: YOUR_APP_SECRET,
+        app_id: YOUR_CLIENT_ID,
+        secret: YOUR_CLIENT_SECRET,
         merchant_order_sn: merchant_order_sn,
       }
     );
-    if (!orderStatusResponse.data || orderStatusResponse.data.code !== 0)
-      throw orderStatusResponse;
+    if (!orderStatusResponse.data || orderStatusResponse.data.code !== 0) throw orderStatusResponse;
     const orderStatusData = orderStatusResponse.data;
     console.log('==============orderStatus==============\n', orderStatusData);
   } catch (err) {
@@ -188,10 +173,7 @@ function getSignature(orderData, appSecret) {
   str += '&secret=' + secret;
   str = str.toUpperCase();
 
-  const sign = crypto
-    .createHmac('sha256', secret)
-    .update(str, 'utf8')
-    .digest('hex');
+  const sign = crypto.createHmac('sha256', secret).update(str, 'utf8').digest('hex');
 
   return sign;
 }
@@ -212,7 +194,7 @@ app.post('/create-autopayment', async (req, res) => {
     console.log('==============orderData==============\n', orderData);
     const orderWithSecret = {
       ...orderData,
-      secret: YOUR_APP_SECRET,
+      secret: YOUR_CLIENT_SECRET,
     };
     const orderResponse = await axios.post(
       'https://www.ddpurse.com/openapi/pay_small_money',
@@ -220,10 +202,7 @@ app.post('/create-autopayment', async (req, res) => {
     );
     console.log(orderResponse);
     const orderResponseData = orderResponse.data;
-    console.log(
-      '==============orderResponseData==============',
-      orderResponseData
-    );
+    console.log('==============orderResponseData==============', orderResponseData);
     if (!orderResponseData.data) throw orderResponseData;
     if (orderResponseData.data.code === -101001) {
       res.json({ error: 'balance too low' });
@@ -251,8 +230,8 @@ app.post('/save-data', async (req, res) => {
     const getHostedOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {
@@ -271,8 +250,8 @@ app.post('/save-data', async (req, res) => {
     const getBalanceOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {
@@ -298,8 +277,8 @@ app.post('/save-data', async (req, res) => {
     const saveDataOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {
@@ -330,9 +309,7 @@ app.post('/save-data', async (req, res) => {
 app.listen(PORT, () =>
   console.log(
     `DotWallet example app listening at ${
-      process.env.NODE_ENV === 'production'
-        ? 'production host'
-        : ip.address() + ':' + PORT
+      process.env.NODE_ENV === 'production' ? 'production host' : APP_URL
     }`
   )
 );
