@@ -10,7 +10,7 @@ dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
 const YOUR_CLIENT_SECRET = process.env.CLIENT_SECRET;
 const YOUR_CLIENT_ID = process.env.CLIENT_ID;
-const dotWalletAPI = `https://staging.api.ddpurse.com`;
+const DOTWALLET_API = `https://staging.api.ddpurse.com`;
 
 const url = require('url');
 var ip = require('ip');
@@ -22,17 +22,66 @@ app.use(express.static('src'));
 
 /**
  *
- * ============================AUTHENTICATION============================
+ * ============================APP AUTHENTICATION============================
  *
  */
+let appAccessToken = ''; // will call this when starting the server at the bottom in app.listen
+async function getAppAccessToken() {
+  try {
+    const data = {
+      client_id: YOUR_CLIENT_ID,
+      client_secret: YOUR_CLIENT_SECRET,
+      grant_type: 'client_credentials',
+    };
+    const accessTokenRequest = await axios.post(
+      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
+      data
+    );
+    console.log('==============access token result==============\n', accessTokenRequest.data);
+    if (!accessTokenRequest.data.data.access_token || accessTokenRequest.data.code !== 0)
+      throw accessTokenRequest;
+    else appAccessToken = accessTokenRequest.data.data.access_token;
+  } catch (error) {
+    console.log('==============ERROR==============\n', error);
+  }
+}
+
+/**
+ *
+ * ============================USER AUTHENTICATION============================
+ *
+ */
+const DB = {
+  // example token storage
+  userId: {
+    accessToken: '12312',
+    refreshToken: '12341',
+    expiry: '123123123',
+  },
+}; // This might be a server cache for better performance
+
+// client-side page to receive the code after user confirms login
 app.get('/redirect', async (req, res) => {
   res.sendFile(path.join(__dirname + '/redirect.html'));
 });
+
 app.post('/auth', async (req, res) => {
   // console.log('req, res', req, res);
+  const userAccessInfo = await getUserAccess(req.body.code);
+  let userInfo;
+  if (userAccessInfo.accessToken) {
+    userInfo = await getUserInfo(userAccessInfo.accessToken);
+  } else res.json({ error: 'error logging in' });
+  DB[userInfo.id] = {
+    accessToken: userAccessInfo.accessToken,
+    refreshToken: userAccessInfo.refreshToken,
+    expiry: new Date().getTime / 1000 + userAccessInfo.expiresIn,
+  };
+  res.json({ ...userInfo });
+});
+
+async function getUserAccess(code) {
   try {
-    ``;
-    const code = req.body.code;
     console.log('==============got code==============\n', code);
     const data = {
       client_id: YOUR_CLIENT_ID,
@@ -41,41 +90,70 @@ app.post('/auth', async (req, res) => {
       code: code,
       redirect_uri: `${APP_URL}/redirect`,
     };
-    console.log('==============data==============\n', data);
-    const accessTokenRequest = await axios.post(`${dotWalletAPI}/v1/oauth2/get_access_token`, data);
+    const accessTokenRequest = await axios.post(
+      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
+      data
+    );
     console.log('==============access token result==============\n', accessTokenRequest.data);
-    const accessToken = accessTokenRequest.data.data.access_token;
-    if (accessToken) {
-      const userInfoOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        method: 'POST',
+    // These would be stored in database or session in a real app
+    if (!accessTokenRequest.data.data.access_token || accessTokenRequest.data.code !== 0)
+      throw accessTokenRequest;
+    else
+      return {
+        accessToken: accessTokenRequest.data.data.access_token,
+        refreshToken: accessTokenRequest.data.data.refresh_token,
+        expiresIn: accessTokenRequest.data.data.expires_in,
       };
-      const userInfoRequest = await axios(`${dotWalletAPI}/v1/user/get_user_info`, userInfoOptions);
-      console.log('==============user info result==============\n', userInfoRequest.data);
-      res.json({ ...userInfoRequest.data.data });
-    }
   } catch (err) {
     console.log('==============ERROR==============\n', err);
   }
-});
-let accessTokenStorage = ''; // These would go to your database in a real app
-let refreshTokenStorage = '';
+}
 
-async function refreshAccess(refreshToken) {
-  const response = await axios.get(
-    `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_CLIENT_ID}&refresh_token=${refreshToken}`
-  );
-  console.log('==============refresh response==============\n', response.data.data);
-  // These would be stored in database or session in a real app
-  accessTokenStorage = response.data.data.access_token;
-  refreshTokenStorage = response.data.data.refresh_token;
-  return {
-    refreshToken: response.data.data.refresh_token,
-    expiry: response.data.data.expires_in,
-  };
+async function getUserInfo(accessToken) {
+  try {
+    const userInfoOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      method: 'POST',
+    };
+    const userInfoRequest = await axios(`${DOTWALLET_API}/v1/user/get_user_info`, userInfoOptions);
+    console.log('==============user info result==============\n', userInfoRequest.data);
+    return userInfoRequest.data.data;
+  } catch (err) {
+    console.log('==============ERROR==============\n', err);
+  }
+}
+
+async function refreshUserAccess(refreshToken) {
+  try {
+    const data = {
+      client_id: YOUR_CLIENT_ID,
+      client_secret: YOUR_CLIENT_SECRET,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    };
+    const accessTokenRequest = await axios.post(
+      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
+      data
+    );
+    console.log(
+      '==============refresh access token result==============\n',
+      accessTokenRequest.data
+    );
+    console.log('==============refresh response==============\n', response.data.data);
+    // // These would be stored in database or session in a real app
+    if (!accessTokenRequest.data.data.access_token || accessTokenRequest.data.code !== 0)
+      throw accessTokenRequest;
+    else
+      return {
+        refreshToken: response.data.data.refresh_token,
+        expiry: response.data.data.expires_in,
+      };
+  } catch (error) {
+    console.log('==============ERROR==============\n', error);
+  }
 }
 
 app.get('/restricted-page', async (req, res) => {
@@ -94,35 +172,61 @@ app.get('/store-front', async (req, res) => {
 app.get('/order-fulfilled', async (req, res) => {
   res.sendFile(path.join(__dirname + '/order-fulfilled.html'));
 });
-app.post('/create-order', async (req, res) => {
+
+async function createOrder(orderData) {
   try {
-    const orderData = req.body;
-    // check if recieve address is dev's own
     console.log('==============orderData==============\n', orderData);
-    const signedOrder = {
-      ...orderData,
-      sign: getSignature(orderData, YOUR_CLIENT_SECRET),
+    const orderCallOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appAccessToken}`,
+      },
+      method: 'POST',
+      data: { ...orderData },
     };
-    const orderSnResponse = await axios.post(
-      'https://www.ddpurse.com/platform/openapi/create_order',
-      signedOrder
+    const orderSnResponse = await axios(
+      `${DOTWALLET_API}/v1/transact/order/create`,
+      orderCallOptions
     );
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
-    if (orderSnData.data && orderSnData.data.code == 0 && orderSnData.data.order_sn) {
-      res.json({
-        order_sn: orderSnData.data.order_sn,
-      });
-      // let's check on the the transaction status after a 2 minute wait
-      setTimeout(() => {
-        orderStatus(orderData.merchant_order_sn);
-      }, 1000 * 120);
+    if (orderSnData.code === 75000) {
+      return 'expired token';
+    } else if (orderSnData.data && orderSnData.code == 0 && orderSnData.data) {
+      return orderSnData.data;
     } else {
-      res.json({
-        error: orderSnData.data ? orderSnData.data : orderSnData,
-      });
-      throw orderSnResponse;
+      return { error: orderSnData.data ? orderSnData.data : orderSnData };
     }
+  } catch (err) {
+    console.log('==============err==============\n', err);
+  }
+}
+
+// // let's check on the the transaction status after a 2 minute wait
+// setTimeout(() => {
+//   orderStatus(orderData.merchant_order_sn);
+// }, 1000 * 120);
+
+app.post('/create-order', async (req, res) => {
+  try {
+    function respond(orderNumber) {
+      if (orderNumber.error) {
+        res.json({
+          error: orderNumber.error,
+        });
+        throw orderNumber.error;
+      } else {
+        res.json({
+          data: orderNumber,
+        });
+      }
+    }
+    let orderNumber = await createOrder(req.body);
+    if (orderNumber === 'expired token') {
+      await getAppAccessToken();
+      orderNumber = await createOrder(req.body);
+    }
+    respond(orderNumber);
   } catch (err) {
     console.log('==============err==============\n', err);
   }
@@ -151,52 +255,26 @@ const orderStatus = async (merchant_order_sn) => {
   }
 };
 
-const md5 = require('md5');
-const crypto = require('crypto');
-
-function getSignature(orderData, appSecret) {
-  let str = '';
-  const secret = md5(appSecret);
-
-  for (let key in orderData) {
-    if (key != 'sign' || key != 'opreturn') {
-      if (str) {
-        str += '&' + key + '=' + orderData[key];
-      } else {
-        str = key + '=' + orderData[key];
-      }
-    }
-  }
-
-  str += '&secret=' + secret;
-  str = str.toUpperCase();
-
-  const sign = crypto.createHmac('sha256', secret).update(str, 'utf8').digest('hex');
-
-  return sign;
-}
 /**
  *
  * ============================AUTOMATIC PAYMENTS============================
  *
  */
 
-app.get('/autopayment-store', async (req, res) => {
-  res.sendFile(path.join(__dirname + '/autopayment-store.html'));
-});
-
 app.post('/create-autopayment', async (req, res) => {
   try {
-    const orderData = req.body;
-    // check if recieve address is dev's own
-    console.log('==============orderData==============\n', orderData);
-    const orderWithSecret = {
-      ...orderData,
-      secret: YOUR_CLIENT_SECRET,
+    console.log('==============orderData==============\n', req.body);
+    const orderCallOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appAccessToken}`,
+      },
+      method: 'POST',
+      data: req.body,
     };
-    const orderResponse = await axios.post(
-      'https://www.ddpurse.com/openapi/pay_small_money',
-      orderWithSecret
+    const orderResponse = await axios(
+      `${DOTWALLET_API}/v1/transact/order/autopay`,
+      orderCallOptions
     );
     console.log(orderResponse);
     const orderResponseData = orderResponse.data;
@@ -304,10 +382,11 @@ app.post('/save-data', async (req, res) => {
   }
 });
 
-app.listen(PORT, () =>
+app.listen(PORT, async () => {
   console.log(
     `DotWallet example app listening at ${
       process.env.NODE_ENV === 'production' ? 'production host' : APP_URL
     }`
-  )
-);
+  );
+  await getAppAccessToken();
+});

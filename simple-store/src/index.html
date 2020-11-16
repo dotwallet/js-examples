@@ -34,12 +34,11 @@
     <script src="./config.js"></script>
 
     <script>
-      const dotWalletAPI = `https://staging.api.ddpurse.com`;
       const scope = encodeURIComponent('user.info autopay.bsv autopay.btc autopay.eth');
       const redirectURI = encodeURIComponent(`${APP_URL}/redirect`);
       const loginState = uuidv4();
       localStorage.setItem('loginState', loginState);
-      const loginURL = `${dotWalletAPI}/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code&state=${loginState}&scope=${scope}`;
+      const loginURL = `${DOTWALLET_API}/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code&state=${loginState}&scope=${scope}`;
       // console.log('url\n', loginURL);
       document.getElementById('button-link').href = loginURL;
     </script>

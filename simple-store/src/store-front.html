@@ -25,22 +25,30 @@
     <div class="container d-flex d-flex flex-column align-items-center justify-content-center">
       <h1>Products</h1>
       <ul class="list-group">
-        <li class="list-group-item mb-2">
+        <li class="list-group-item mb-2 d-flex">
           Bananas
-          <img src="./assets/bananas.png" alt="bananas" width="50px" />
-          <button class="btn btn-secondary btn-sm" id="banana-button" type="button">
-            546 satoshis
+          <img class="mr-auto ml-2" src="./assets/bananas.png" alt="bananas" width="50px" />
+          546 satoshis
+          <button class="btn btn-secondary btn-sm mx-2" id="banana-button" type="button">
+            single pay
+          </button>
+          <button class="btn btn-secondary btn-sm" id="autopay-button" type="button">
+            auto pay
           </button>
         </li>
-        <li class="list-group-item mb-2">
-          Bananas
-          <img src="./assets/bananas.png" alt="bananas" width="50px" />
-          <button disabled class="btn btn-secondary btn-sm" type="button">546 satoshis</button>
+        <li class="list-group-item mb-2 d-flex">
+          More Bananas
+          <img class="mr-auto ml-2" src="./assets/bananas.png" alt="bananas" width="50px" />
+          546 satoshis
+          <button disabled class="btn btn-secondary btn-sm mx-2" type="button">single pay</button>
+          <button disabled class="btn btn-secondary btn-sm" type="button">auto pay</button>
         </li>
-        <li class="list-group-item mb-2">
-          Bananas
-          <img src="./assets/bananas.png" alt="bananas" width="50px" />
-          <button disabled class="btn btn-secondary btn-sm" type="button">546 satoshis</button>
+        <li class="list-group-item mb-2 d-flex">
+          Yet More Bananas
+          <img class="mr-auto ml-2" src="./assets/bananas.png" alt="bananas" width="50px" />
+          546 satoshis
+          <button disabled class="btn btn-secondary btn-sm mx-2" type="button">single pay</button>
+          <button disabled class="btn btn-secondary btn-sm" type="button">auto pay</button>
         </li>
         <p id="order-status"></p>
       </ul>
@@ -51,33 +59,63 @@
 
     <script>
       document.getElementById('store-link').href = window.location.origin + '/store-front';
-
+      const orderData = {
+        out_order_id: uuidv4(),
+        coin_type: 'BSV',
+        to: [
+          {
+            type: 'address',
+            content: '1L3z6DzHpfr7pkkZmKfVNMjwY1984D5YRv',
+            amount: 546,
+          },
+        ],
+        product: {
+          id: uuidv4(),
+          name: 'bananas',
+          detail: 'A lovely bunch of bananas',
+        },
+        subject: 'an order of fresh bananas',
+        notify_url: APP_URL + '/payment-result', // replace  with your IP
+      };
       document.getElementById('banana-button').addEventListener('click', async () => {
         document.getElementById('order-status').innerText = '';
-        const orderData = {
-          app_id: CLIENT_ID, // replace with your app id
-          merchant_order_sn: uuidv4(),
-          item_name: 'bananas',
-          order_amount: 546, // can't be lower than 546
-          nonce_str: new Date().toString(),
-          notice_uri: APP_URL + '/payment-result', // replace  with your IP
-          redirect_uri: APP_URL + '/order-fulfilled', // replace with your IP
-        };
+
         const orderSnResponse = await fetch(
           APP_URL + '/create-order', // replace with your IP
           {
             method: 'POST',
-            body: JSON.stringify(orderData),
+            body: JSON.stringify({
+              ...orderData,
+              redirect_uri: APP_URL + '/order-fulfilled', // replace with your IP
+              expires: 0,
+            }),
             headers: {
               'Content-type': 'application/json; charset=UTF-8',
             },
           }
         );
         const orderSnData = await orderSnResponse.json();
-        if (orderSnData.order_sn) {
-          // console.log('orderSn', orderSnData.order_sn);
-          window.location.href = `https://www.ddpurse.com/desktop/open/order?order_sn=${orderSnData.order_sn}`;
+        console.log('orderSnData', orderSnData);
+
+        if (orderSnData.data) {
+          window.location.href = `${DOTWALLET_API}/v1/order/apply_payment?order_id=${orderSnData.data}`;
         } else document.getElementById('order-status').innerText = 'error: ' + orderSnData.error;
+      });
+      document.getElementById('autopay-button').addEventListener('click', async () => {
+        const autoPaymentResponse = await fetch(
+          APP_URL + '/create-autopayment', // replace with your IP
+          {
+            method: 'POST',
+            body: JSON.stringify({ ...orderData, user_id: localStorage.getItem('id') }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            },
+          }
+        );
+        const autoPaymentResponseData = await autoPaymentResponse.json();
+        console.log(autoPaymentResponseData);
+        if (autoPaymentResponseData.paytxid) alert('success');
+        else alert('payment failed');
       });
     </script>
 

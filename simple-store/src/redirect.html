@@ -6,13 +6,8 @@
     <title>Login Redirect</title>
   </head>
 
+  <p>redirecting....</p>
   <body>
-    <nav class="navbar navbar navbar-dark bg-dark">
-      <a class="navbar-brand" href="/">
-        <img src="./assets/logo/awesome-logo.svg" width="30" height="30" alt="" />
-      </a>
-    </nav>
-
     <script src="./config.js"></script>
 
     <script>
@@ -31,8 +26,11 @@
           },
         });
         const authResponse = await authCall.json();
-        // console.log('authResponse', authResponse);
-        const homepageURL = `${APP_URL}/restricted-page/?name=${authResponse.nickname}&pic=${authResponse.avatar}&user_id=${authResponse.id}`;
+        console.log('authResponse', authResponse);
+        for (const info in authResponse) {
+          localStorage.setItem(info, authResponse[info]);
+        }
+        const homepageURL = `${APP_URL}/restricted-page`;
         // console.log('homepageURL', homepageURL);
         window.location.href = homepageURL;
       };
