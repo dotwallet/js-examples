@@ -98,7 +98,7 @@
         console.log('orderSnData', orderSnData);
 
         if (orderSnData.data) {
-          window.location.href = `${DOTWALLET_API}/v1/order/apply_payment?order_id=${orderSnData.data}`;
+          window.location.href = `${DOTWALLET_API}/v1/transact/order/apply_payment?order_id=${orderSnData.data}`;
         } else document.getElementById('order-status').innerText = 'error: ' + orderSnData.error;
       });
       document.getElementById('autopay-button').addEventListener('click', async () => {
@@ -114,7 +114,12 @@
         );
         const autoPaymentResponseData = await autoPaymentResponse.json();
         console.log(autoPaymentResponseData);
-        if (autoPaymentResponseData.paytxid) alert('success');
+        if (autoPaymentResponseData.txid) alert('success');
+        else if (
+          autoPaymentResponseData.error &&
+          autoPaymentResponseData.error === 'balance too low'
+        )
+          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer`;
         else alert('payment failed');
       });
     </script>

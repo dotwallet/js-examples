@@ -175,7 +175,7 @@ app.get('/order-fulfilled', async (req, res) => {
 
 async function createOrder(orderData) {
   try {
-    console.log('==============orderData==============\n', orderData);
+    // console.log('==============orderData==============\n', orderData);
     const orderCallOptions = {
       headers: {
         'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ const orderStatus = async (merchant_order_sn) => {
 
 app.post('/create-autopayment', async (req, res) => {
   try {
-    console.log('==============orderData==============\n', req.body);
+    // console.log('==============orderData==============\n', req.body);
     const orderCallOptions = {
       headers: {
         'Content-Type': 'application/json',
@@ -279,10 +279,9 @@ app.post('/create-autopayment', async (req, res) => {
     console.log(orderResponse);
     const orderResponseData = orderResponse.data;
     console.log('==============orderResponseData==============', orderResponseData);
-    if (!orderResponseData.data) throw orderResponseData;
-    if (orderResponseData.data.code === -101001) {
+    if (orderResponseData.code === 10180007) {
       res.json({ error: 'balance too low' });
-    } else if (orderResponseData.data.code !== 0) throw orderResponseData;
+    } else if (orderResponseData.code !== 0) throw orderResponseData;
     else res.json(orderResponseData.data);
   } catch (err) {
     console.log('==============err==============\n', err);
