@@ -30,7 +30,7 @@
         for (const info in authResponse) {
           localStorage.setItem(info, authResponse[info]);
         }
-        const homepageURL = `${APP_URL}/restricted-page`;
+        const homepageURL = `${APP_URL}/logged-in`;
         // console.log('homepageURL', homepageURL);
         window.location.href = homepageURL;
       };

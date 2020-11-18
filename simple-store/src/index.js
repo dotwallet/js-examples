@@ -61,8 +61,8 @@ const DB = {
 }; // This might be a server cache for better performance
 
 // client-side page to receive the code after user confirms login
-app.get('/redirect', async (req, res) => {
-  res.sendFile(path.join(__dirname + '/redirect.html'));
+app.get('/log-in-redirect', async (req, res) => {
+  res.sendFile(path.join(__dirname + '/log-in-redirect.html'));
 });
 
 app.post('/auth', async (req, res) => {
@@ -88,7 +88,7 @@ async function getUserAccess(code) {
       client_secret: YOUR_CLIENT_SECRET,
       grant_type: 'authorization_code',
       code: code,
-      redirect_uri: `${APP_URL}/redirect`,
+      redirect_uri: `${APP_URL}/log-in-redirect`,
     };
     const accessTokenRequest = await axios.post(
       `${DOTWALLET_API}/v1/oauth2/get_access_token`,
@@ -156,8 +156,8 @@ async function refreshUserAccess(refreshToken) {
   }
 }
 
-app.get('/restricted-page', async (req, res) => {
-  res.sendFile(path.join(__dirname + '/restricted-page.html'));
+app.get('/logged-in', async (req, res) => {
+  res.sendFile(path.join(__dirname + '/logged-in.html'));
 });
 
 /**

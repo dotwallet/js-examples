@@ -50,6 +50,7 @@
           <button disabled class="btn btn-secondary btn-sm mx-2" type="button">single pay</button>
           <button disabled class="btn btn-secondary btn-sm" type="button">auto pay</button>
         </li>
+
         <p id="order-status"></p>
       </ul>
     </div>
@@ -114,13 +115,14 @@
         );
         const autoPaymentResponseData = await autoPaymentResponse.json();
         console.log(autoPaymentResponseData);
-        if (autoPaymentResponseData.txid) alert('success');
+        if (autoPaymentResponseData.txid)
+          document.getElementById('order-status').innerText = 'paid!';
         else if (
           autoPaymentResponseData.error &&
           autoPaymentResponseData.error === 'balance too low'
         )
           window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer`;
-        else alert('payment failed');
+        else document.getElementById('order-status').innerText = 'payment failed';
       });
     </script>
 
