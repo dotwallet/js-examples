@@ -89,10 +89,10 @@ module.exports = async function setupDB() {
       return { db, threadId };
     }
     const dbIfno = await db.getDBInfo(threadId);
-    // console.log(dbIfno);
-    // await db.updateCollection(threadId, 'txlist', txListSchema);
+    console.log('dbinfo ', dbIfno);
     const threadsList = await db.listThreads();
-    // console.log('threadslist', threadsList);
+    // await db.updateCollection(threadId, 'DiceGame', diceGameSchema);
+    await console.log('threadslist', threadsList);
     const exists = threadsList.listList.map((thread) => thread.id).includes(process.env.THREAD_ID);
     console.log('thread exists', exists);
     if (threadsList.listList.length < 1 || !exists) {

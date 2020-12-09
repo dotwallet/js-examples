@@ -385,7 +385,7 @@ app.post('/save-data', async (req, res) => {
       },
     };
     const getHostedAccount = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/get_hosted_account',
+      'https://www.ddpurse.com/openapi/v2/get_hosted_account',
       getHostedOptions
     );
     const getHostedData = getHostedAccount.data;
@@ -405,7 +405,7 @@ app.post('/save-data', async (req, res) => {
       },
     };
     const getBalance = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/get_hosted_account_balance',
+      'https://www.ddpurse.com/openapi/v2/get_hosted_account_balance',
       getBalanceOptions
     );
     const getBalanceData = getBalance.data;
@@ -434,7 +434,7 @@ app.post('/save-data', async (req, res) => {
       },
     };
     const response = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/push_chain_data',
+      'https://www.ddpurse.com/openapi/v2/push_chain_data',
       saveDataOptions
     );
     const responseData = response.data;

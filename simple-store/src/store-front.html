@@ -39,19 +39,32 @@
         <li class="list-group-item mb-2 d-flex">
           More Bananas
           <img class="mr-auto ml-2" src="./assets/bananas.png" alt="bananas" width="50px" />
-          546 satoshis
+          746 satoshis
           <button disabled class="btn btn-secondary btn-sm mx-2" type="button">single pay</button>
           <button disabled class="btn btn-secondary btn-sm" type="button">auto pay</button>
         </li>
         <li class="list-group-item mb-2 d-flex">
           Yet More Bananas
           <img class="mr-auto ml-2" src="./assets/bananas.png" alt="bananas" width="50px" />
-          546 satoshis
+          946 satoshis
           <button disabled class="btn btn-secondary btn-sm mx-2" type="button">single pay</button>
           <button disabled class="btn btn-secondary btn-sm" type="button">auto pay</button>
         </li>
 
         <p id="order-status"></p>
+        <a id="check-data-link"></a>
+        <button class="btn btn-outline-primary btn-lg mt-5" type="button" id="save-data">
+          Record today's prices on the blockchain
+        </button>
+        <button
+          class="btn btn-outline-primary btn-lg mt-5"
+          style="display: none"
+          type="button"
+          id="check-data"
+        >
+          Check data saved on the blockchain
+        </button>
+        <p id="check-data-display"></p>
       </ul>
     </div>
 
@@ -59,7 +72,9 @@
     <script src="./config.js"></script>
 
     <script>
+      // Payments
       document.getElementById('store-link').href = window.location.origin + '/store-front';
+      // basic payment order info
       const orderData = {
         out_order_id: uuidv4(),
         coin_type: 'BSV',
@@ -78,6 +93,8 @@
         subject: 'an order of fresh bananas',
         notify_url: APP_URL + '/payment-result', // replace  with your IP
       };
+
+      // single payment order
       document.getElementById('banana-button').addEventListener('click', async () => {
         document.getElementById('order-status').innerText = '';
 
@@ -87,7 +104,7 @@
             method: 'POST',
             body: JSON.stringify({
               ...orderData,
-              redirect_uri: APP_URL + '/order-fulfilled', // replace with your IP
+              redirect_uri: window.location.href, // replace with your IP
               expires: 0,
             }),
             headers: {
@@ -99,9 +116,11 @@
         console.log('orderSnData', orderSnData);
 
         if (orderSnData.data) {
-          window.location.href = `${DOTWALLET_API}/v1/transact/order/apply_payment?order_id=${orderSnData.data}`;
+          window.location.href = `${DOTWALLET_API}/transact/order/apply_payment?order_id=${orderSnData.data}`;
         } else document.getElementById('order-status').innerText = 'error: ' + orderSnData.error;
       });
+
+      // autopay
       document.getElementById('autopay-button').addEventListener('click', async () => {
         const autoPaymentResponse = await fetch(
           APP_URL + '/create-autopayment', // replace with your IP
@@ -125,7 +144,54 @@
         else document.getElementById('order-status').innerText = 'payment failed';
       });
     </script>
+    <script>
+      // Save data on chain (with autopay)
+      const saveData = {
+        bananas: 546,
+        moreBananas: 746,
+        yetMoreBananas: 946,
+      };
+      document.getElementById('save-data').addEventListener('click', async () => {
+        const response = await fetch(
+          APP_URL + '/save-data', // replace with your IP
+          {
+            method: 'POST',
+            body: JSON.stringify({ saveData, userId: localStorage.getItem('id') }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            },
+          }
+        );
+        const responseData = await response.json();
+        console.log('saveDataResponseData', responseData);
+        if (responseData.txid) {
+          document.getElementById('order-status').innerText = `Saved!`;
+          document.getElementById(
+            'check-data-link'
+          ).href = `https://satoshi.io/tx/${responseData.txid}`;
+          document.getElementById('check-data-link').innerText = 'Check transaction';
+          document.getElementById('check-data').style = 'display: initial';
+          document.getElementById('check-data').addEventListener('click', () => {
+            checkData(responseData.txid);
+          });
+        } else if (responseData.error && responseData.error === 'balance too low')
+          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer`;
+        else document.getElementById('order-status').innerText = 'Saving failed';
 
+        async function checkData(txid) {
+          const response = await fetch(APP_URL + '/get-tx-data', {
+            method: 'POST',
+            body: JSON.stringify({ txid }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            },
+          });
+          const data = await response.json();
+          console.log('checkDataResponseData', data);
+          document.getElementById('check-data-display').innerText = JSON.stringify(data);
+        }
+      });
+    </script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

@@ -5,12 +5,13 @@ const dotenv = require('dotenv');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
 dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
 const YOUR_CLIENT_SECRET = process.env.CLIENT_SECRET;
 const YOUR_CLIENT_ID = process.env.CLIENT_ID;
-const DOTWALLET_API = `https://staging.api.ddpurse.com`;
+const DOTWALLET_API = `https://api.ddpurse.com/v1`; // https://staging.api.ddpurse.com/v1
 
 const url = require('url');
 var ip = require('ip');
@@ -33,10 +34,7 @@ async function getAppAccessToken() {
       client_secret: YOUR_CLIENT_SECRET,
       grant_type: 'client_credentials',
     };
-    const accessTokenRequest = await axios.post(
-      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
-      data
-    );
+    const accessTokenRequest = await axios.post(`${DOTWALLET_API}/oauth2/get_access_token`, data);
     console.log('==============access token result==============\n', accessTokenRequest.data);
     if (!accessTokenRequest.data.data.access_token || accessTokenRequest.data.code !== 0)
       throw accessTokenRequest;
@@ -90,10 +88,7 @@ async function getUserAccess(code) {
       code: code,
       redirect_uri: `${APP_URL}/log-in-redirect`,
     };
-    const accessTokenRequest = await axios.post(
-      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
-      data
-    );
+    const accessTokenRequest = await axios.post(`${DOTWALLET_API}/oauth2/get_access_token`, data);
     console.log('==============access token result==============\n', accessTokenRequest.data);
     // These would be stored in database or session in a real app
     if (!accessTokenRequest.data.data.access_token || accessTokenRequest.data.code !== 0)
@@ -118,7 +113,7 @@ async function getUserInfo(accessToken) {
       },
       method: 'POST',
     };
-    const userInfoRequest = await axios(`${DOTWALLET_API}/v1/user/get_user_info`, userInfoOptions);
+    const userInfoRequest = await axios(`${DOTWALLET_API}/user/get_user_info`, userInfoOptions);
     console.log('==============user info result==============\n', userInfoRequest.data);
     return userInfoRequest.data.data;
   } catch (err) {
@@ -134,10 +129,7 @@ async function refreshUserAccess(refreshToken) {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     };
-    const accessTokenRequest = await axios.post(
-      `${DOTWALLET_API}/v1/oauth2/get_access_token`,
-      data
-    );
+    const accessTokenRequest = await axios.post(`${DOTWALLET_API}/oauth2/get_access_token`, data);
     console.log(
       '==============refresh access token result==============\n',
       accessTokenRequest.data
@@ -184,10 +176,7 @@ async function createOrder(orderData) {
       method: 'POST',
       data: { ...orderData },
     };
-    const orderSnResponse = await axios(
-      `${DOTWALLET_API}/v1/transact/order/create`,
-      orderCallOptions
-    );
+    const orderSnResponse = await axios(`${DOTWALLET_API}/transact/order/create`, orderCallOptions);
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
     if (orderSnData.code === 75000) {
@@ -202,54 +191,56 @@ async function createOrder(orderData) {
   }
 }
 
-// // let's check on the the transaction status after a 2 minute wait
-// setTimeout(() => {
-//   orderStatus(orderData.merchant_order_sn);
-// }, 1000 * 120);
-
 app.post('/create-order', async (req, res) => {
   try {
-    function respond(orderNumber) {
-      if (orderNumber.error) {
+    function respond(orderId) {
+      if (orderId.error) {
         res.json({
-          error: orderNumber.error,
+          error: orderId.error,
         });
-        throw orderNumber.error;
+        throw orderId.error;
       } else {
         res.json({
-          data: orderNumber,
+          data: orderId,
         });
+        // let's check on the the transaction status after a 1 minute wait
+        setTimeout(() => {
+          orderStatus(orderId);
+        }, 1000 * 60);
       }
     }
-    let orderNumber = await createOrder(req.body);
-    if (orderNumber === 'expired token') {
+    console.log('notify_url -----------', req.body.notify_url);
+    let orderId = await createOrder(req.body);
+    if (orderId === 'expired token') {
       await getAppAccessToken();
-      orderNumber = await createOrder(req.body);
+      orderId = await createOrder(req.body);
     }
-    respond(orderNumber);
+    respond(orderId);
   } catch (err) {
     console.log('==============err==============\n', err);
   }
 });
 
-app.get('/payment-result', (req, res) => {
-  // the response from 'notice_uri' will be in the request queries
-  console.log('==============payment-result req==============\n', req.query);
+app.post('/payment-result', (req, res) => {
+  // the response from 'notify_url' will be in the request queries
+  const body = { ...req.body };
+  console.log('==============payment-result ==============\n', body);
 });
 
-const orderStatus = async (merchant_order_sn) => {
+const orderStatus = async (orderId) => {
   try {
-    const orderStatusResponse = await axios.post(
-      'https://www.ddpurse.com/platform/openapi/search_order',
-      {
-        app_id: YOUR_CLIENT_ID,
-        secret: YOUR_CLIENT_SECRET,
-        merchant_order_sn: merchant_order_sn,
-      }
-    );
+    const options = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appAccessToken}`,
+      },
+      method: 'POST',
+      data: { order_id: orderId },
+    };
+    const orderStatusResponse = await axios(`${DOTWALLET_API}/transact/order/get_order`, options);
     if (!orderStatusResponse.data || orderStatusResponse.data.code !== 0) throw orderStatusResponse;
     const orderStatusData = orderStatusResponse.data;
-    console.log('==============orderStatus==============\n', orderStatusData);
+    console.log('==============order Status result==============\n', orderStatusData);
   } catch (err) {
     console.log('==============err==============\n', err);
   }
@@ -272,13 +263,16 @@ app.post('/create-autopayment', async (req, res) => {
       method: 'POST',
       data: req.body,
     };
-    const orderResponse = await axios(
-      `${DOTWALLET_API}/v1/transact/order/autopay`,
-      orderCallOptions
-    );
+    const callApi = () => axios(`${DOTWALLET_API}/transact/order/autopay`, orderCallOptions);
+    let orderResponse = await callApi();
     console.log(orderResponse);
-    const orderResponseData = orderResponse.data;
+    let orderResponseData = orderResponse.data;
     console.log('==============orderResponseData==============', orderResponseData);
+    if (orderResponseData.code === 75000) {
+      getAppAccessToken();
+      orderResponse = await callApi();
+      orderResponseData = orderResponse.data;
+    }
     if (orderResponseData.code === 10180007) {
       res.json({ error: 'balance too low' });
     } else if (orderResponseData.code !== 0) throw orderResponseData;
@@ -292,6 +286,7 @@ app.post('/create-autopayment', async (req, res) => {
 /**
  *
  * ============================SAVE DATA ON CHAIN============================
+ * This will use autopay, so user must have it activated
  *
  */
 
@@ -299,85 +294,91 @@ const savedDataTxns = []; // In real app could store in DB. Save a list of txns 
 
 app.post('/save-data', async (req, res) => {
   try {
-    const data = req.body;
-    // check if recieve address is dev's own
-    console.log('==============data==============\n', data);
-    const getHostedOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-        appid: YOUR_CLIENT_ID,
-        appsecret: YOUR_CLIENT_SECRET,
-      },
-      method: 'POST',
-      data: {
-        coin_type: 'BSV',
+    const data = JSON.stringify(req.body.saveData);
+    const userId = req.body.userId;
+    const hexEncoded = Buffer.from(data, 'utf8').toString('hex');
+    // console.log('==============data, hexEncoded==============\n', data, hexEncoded);
+    const orderData = {
+      user_id: userId,
+      out_order_id: uuidv4(),
+      coin_type: 'BSV',
+      to: [
+        {
+          type: 'script',
+          content: `006a${hexEncoded}`,
+          amount: 0,
+        },
+      ],
+      product: {
+        id: uuidv4(),
+        name: 'prices: ' + new Date().getDate(),
       },
     };
-    const getHostedAccount = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/get_hosted_account',
-      getHostedOptions
-    );
-    const getHostedData = getHostedAccount.data;
-    console.log('==============getHostedData==============', getHostedData);
-    if (!getHostedData.data.address) {
-      throw getHostedData;
+    const orderCallOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appAccessToken}`,
+      },
+      method: 'POST',
+      data: orderData,
+    };
+    const callApi = () => axios(`${DOTWALLET_API}/transact/order/autopay`, orderCallOptions);
+    let orderResponse = await callApi();
+    // console.log(orderResponse);
+    let orderResponseData = orderResponse.data;
+    console.log('==============orderResponseData==============', orderResponseData);
+    if (orderResponseData.code === 75000) {
+      getAppAccessToken();
+      orderResponse = await callApi();
+      orderResponseData = orderResponse.data;
     }
-    const getBalanceOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-        appid: YOUR_CLIENT_ID,
-        appsecret: YOUR_CLIENT_SECRET,
-      },
-      method: 'POST',
-      data: {
-        coin_type: 'BSV',
-      },
-    };
-    const getBalance = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/get_hosted_account_balance',
-      getBalanceOptions
-    );
-    const getBalanceData = getBalance.data;
-    console.log('==============getBalanceData==============', getBalanceData);
-    if (!getBalanceData.data.confirm && getBalanceData.data.confirm !== 0) {
-      console.log(
-        'getBalanceData.data.confirm;, getBalanceData.data.confirm;',
-        getBalanceData.data.confirm
-      );
-      throw getBalanceData;
-    }
-
-    if (getBalanceData.data.confirm + getBalanceData.data.unconfirm < 700)
-      throw 'developer wallet balance too low';
-    const saveDataOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-        appid: YOUR_CLIENT_ID,
-        appsecret: YOUR_CLIENT_SECRET,
-      },
-      method: 'POST',
-      data: {
-        coin_type: 'BSV',
-        data: JSON.stringify(data),
-        data_type: 0,
-      },
-    };
-    const saveData = await axios(
-      'https://www.ddpurse.com/platform/openapi/v2/push_chain_data',
-      saveDataOptions
-    );
-    const saveDataData = saveData.data;
-    console.log('==============getBalanceData==============', saveDataData);
-    savedDataTxns.push({
-      ...saveDataData.data,
-      timestamp: new Date(),
-      tag: 'banana-price',
-    }); //in a real app this would go to DB
-    res.json(saveDataData.data);
+    if (orderResponseData.code === 10180007) {
+      res.json({ error: 'balance too low' });
+    } else if (orderResponseData.code !== 0) throw orderResponseData;
+    else res.json(orderResponseData.data);
   } catch (err) {
     console.log(err.msg, err.data, err.message, err.response);
-    console.log('==============err==============\n', err);
+    console.log('==============save data err==============\n', err);
     res.json(err);
+  }
+});
+
+app.post('/get-tx-data', async (req, res) => {
+  try {
+    const txid = req.body.txid;
+    console.log('==============txid==============\n', txid);
+    const options = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${appAccessToken}`,
+      },
+      method: 'POST',
+      data: JSON.stringify({ transaction_hash: txid }),
+    };
+    const callApi = () => axios(`${DOTWALLET_API}/bsvchain/get_transaction`, options);
+    let response = await callApi();
+    let responseData = response.data;
+    console.log('==============responseData==============', responseData);
+    if (responseData.code === 75000) {
+      getAppAccessToken();
+      response = await callApi();
+      responseData = response.data;
+    }
+    let data;
+    responseData.data.vouts.forEach((vout) => {
+      if (vout.script_hex.startsWith('006a')) {
+        const hexDecoded = Buffer.from(
+          vout.script_hex.slice(4), // slice off the '006a'
+          'hex'
+        ).toString('utf8');
+        data = JSON.parse(hexDecoded);
+      }
+    });
+    res.json({ ...data });
+  } catch (error) {
+    console.log('==============check tx err==============\n', error);
+
+    res.json({ error });
   }
 });
 
