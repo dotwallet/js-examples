@@ -26,7 +26,7 @@
         src="./assets/logo/default.png"
         alt="app logo"
       />
-      <a id="button-link" class="img-fluid m-0">
+      <a id="login-link" class="img-fluid m-0">
         <img src="./assets/dotwallet-login.png" alt="dotwallet-login" />
       </a>
     </div>
@@ -40,7 +40,7 @@
       localStorage.setItem('loginState', loginState);
       const loginURL = `${DOTWALLET_API}/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code&state=${loginState}&scope=${scope}`;
       // console.log('url\n', loginURL);
-      document.getElementById('button-link').href = loginURL;
+      document.getElementById('login-link').href = loginURL;
     </script>
 
     <script

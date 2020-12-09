@@ -17,7 +17,7 @@ const DOTWALLET_API =
     : `https://api.ddpurse.com/v1`;
 
 const url = require('url');
-var ip = require('ip');
+const ip = require('ip');
 const APP_URL =
   process.env.NODE_ENV === 'production'
     ? 'https://dotwallet-simple-store.herokuapp.com'
@@ -71,7 +71,7 @@ app.get('/log-in-redirect', async (req, res) => {
 
 app.post('/auth', async (req, res) => {
   // console.log('req, res', req, res);
-  const userAccessInfo = await getUserAccess(req.body.code);
+  const userAccessInfo = await getUserAccessToken(req.body.code);
   let userInfo;
   if (userAccessInfo.accessToken) {
     userInfo = await getUserInfo(userAccessInfo.accessToken);
@@ -84,7 +84,7 @@ app.post('/auth', async (req, res) => {
   res.json({ ...userInfo });
 });
 
-async function getUserAccess(code) {
+async function getUserAccessToken(code) {
   try {
     console.log('==============got code==============\n', code);
     const data = {
@@ -112,14 +112,14 @@ async function getUserAccess(code) {
 
 async function getUserInfo(accessToken) {
   try {
-    const userInfoOptions = {
+    const options = {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
       method: 'POST',
     };
-    const userInfoRequest = await axios(`${DOTWALLET_API}/user/get_user_info`, userInfoOptions);
+    const userInfoRequest = await axios(`${DOTWALLET_API}/user/get_user_info`, options);
     console.log('==============user info result==============\n', userInfoRequest.data);
     return userInfoRequest.data.data;
   } catch (err) {
@@ -174,7 +174,7 @@ app.get('/order-fulfilled', async (req, res) => {
 async function createOrder(orderData) {
   try {
     // console.log('==============orderData==============\n', orderData);
-    const orderCallOptions = {
+    const options = {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${appAccessToken}`,
@@ -182,7 +182,7 @@ async function createOrder(orderData) {
       method: 'POST',
       data: { ...orderData },
     };
-    const orderSnResponse = await axios(`${DOTWALLET_API}/transact/order/create`, orderCallOptions);
+    const orderSnResponse = await axios(`${DOTWALLET_API}/transact/order/create`, options);
     const orderSnData = orderSnResponse.data;
     console.log('==============orderSnData==============', orderSnData);
     if (orderSnData.code === 75000) {
@@ -389,10 +389,6 @@ app.post('/get-tx-data', async (req, res) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(
-    `DotWallet example app listening at ${
-      process.env.NODE_ENV === 'production' ? 'production host' : APP_URL
-    }`
-  );
+  console.log(`DotWallet example app listening at ${APP_URL}`);
   await getAppAccessToken();
 });
