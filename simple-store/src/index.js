@@ -11,11 +11,17 @@ dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
 const YOUR_CLIENT_SECRET = process.env.CLIENT_SECRET;
 const YOUR_CLIENT_ID = process.env.CLIENT_ID;
-const DOTWALLET_API = `https://api.ddpurse.com/v1`; // https://staging.api.ddpurse.com/v1
+const DOTWALLET_API =
+  process.env.NODE_ENV === 'production'
+    ? 'https://staging.api.ddpurse.com/v1'
+    : `https://api.ddpurse.com/v1`;
 
 const url = require('url');
 var ip = require('ip');
-const APP_URL = `http://${ip.address()}:${PORT}`;
+const APP_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://dotwallet-simple-store.herokuapp.com'
+    : `http://${ip.address()}:${PORT}`;
 
 app.use(cors());
 app.use(bodyParser.json());
