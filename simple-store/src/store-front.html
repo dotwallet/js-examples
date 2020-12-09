@@ -116,7 +116,7 @@
         console.log('orderSnData', orderSnData);
 
         if (orderSnData.data) {
-          window.location.href = `${DOTWALLET_API}/transact/order/apply_payment?order_id=${orderSnData.data}`;
+          window.location.href = `${DOTWALLET_API}/v1/transact/order/apply_payment?order_id=${orderSnData.data}`;
         } else document.getElementById('order-status').innerText = 'error: ' + orderSnData.error;
       });
 
