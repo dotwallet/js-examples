@@ -303,9 +303,9 @@ async function setupDB() {
     // await db.updateCollection(threadId, 'txlist', txListSchema);
     const threadsList = await db.listThreads();
     console.log('threadslist', threadsList);
-    const exists = threadsList.listList.map((thread) => thread.id).includes(process.env.THREAD_ID);
+    const exists = threadsList.map((thread) => thread.id).includes(process.env.THREAD_ID);
     console.log('thread exists', exists);
-    if (threadsList.listList.length < 1 || !exists) {
+    if (threadsList.length < 1 || !exists) {
       await initializeDB();
     }
   } catch (error) {
@@ -333,16 +333,14 @@ async function setupDB() {
 
 // get wishlist
 app.get('/get-wishlist', async (req, res) => {
-  const wishlistInstanceResult = await DB.findByID(threadId, 'wishlist', '1');
-  const wishlistInstance = wishlistInstanceResult.instance;
+  const wishlistInstance = await DB.findByID(threadId, 'wishlist', '1');
   const wishlist = wishlistInstance.list;
   const sorted = _.orderBy(wishlist, ['bounty'], ['desc']);
   res.json(sorted);
 });
 // add wish
 app.post('/add-wish', async (req, res) => {
-  const wishlistInstanceResult = await DB.findByID(threadId, 'wishlist', '1');
-  const wishlistInstance = wishlistInstanceResult.instance;
+  const wishlistInstance = await DB.findByID(threadId, 'wishlist', '1');
   const wishlist = wishlistInstance.list;
   wishlist.push(req.body);
   await DB.save(threadId, 'wishlist', [wishlistInstance]);
@@ -350,8 +348,7 @@ app.post('/add-wish', async (req, res) => {
 });
 // increase bounty
 app.post('/increase-bounty', async (req, res) => {
-  const wishlistInstanceResult = await DB.findByID(threadId, 'wishlist', '1');
-  const wishlistInstance = wishlistInstanceResult.instance;
+  const wishlistInstance = await DB.findByID(threadId, 'wishlist', '1');
   const wishlist = wishlistInstance.list;
   const { id, original, addAmt } = req.body;
   console.log('increase bounty', id, original, addAmt);
@@ -440,8 +437,7 @@ app.post('/save-data', async (req, res) => {
     const responseData = response.data;
     console.log('==============saveData==============', responseData);
 
-    const txlistInstanceResult = await DB.findByID(threadId, 'txlist', '1');
-    const txlistInstance = txlistInstanceResult.instance;
+    const txlistInstance = await DB.findByID(threadId, 'txlist', '1');
     const txlist = txlistInstance.list;
     const newTxRecord = {
       saveTxid: responseData.data.txid,
@@ -460,8 +456,7 @@ app.post('/save-data', async (req, res) => {
 
 // get wishlist
 app.get('/get-txlist', async (req, res) => {
-  const txlistInstanceResult = await DB.findByID(threadId, 'txlist', '1');
-  const txlistInstance = txlistInstanceResult.instance;
+  const txlistInstance = await DB.findByID(threadId, 'txlist', '1');
   const txlist = txlistInstance.list;
   txlist.reverse();
   // console.log(txlist);
