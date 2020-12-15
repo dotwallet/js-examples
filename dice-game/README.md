@@ -1,8 +1,8 @@
-# wishlist
+# dice-game
 
 ## The app
 
-Try the app out on the DotWallet app store under 'DotWallet Wishlist'.
+Try the app out on the DotWallet app store under 'Fair Dice'.
 
 ## Tech and libraries
 
