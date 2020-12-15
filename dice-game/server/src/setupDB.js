@@ -93,9 +93,9 @@ module.exports = async function setupDB() {
     const threadsList = await db.listThreads();
     // await db.updateCollection(threadId, 'DiceGame', diceGameSchema);
     await console.log('threadslist', threadsList);
-    const exists = threadsList.listList.map((thread) => thread.id).includes(process.env.THREAD_ID);
+    const exists = threadsList.map((thread) => thread.id).includes(process.env.THREAD_ID);
     console.log('thread exists', exists);
-    if (threadsList.listList.length < 1 || !exists) {
+    if (threadsList.length < 1 || !exists) {
       return await initializeDB();
     } else return { db, threadId };
   } catch (error) {
