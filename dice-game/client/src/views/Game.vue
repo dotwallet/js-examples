@@ -161,6 +161,9 @@ export default {
 
 <style scoped>
 .game {
-  @apply items-center h-full text-white min-w-full;
+  @apply items-center;
+  @apply h-full;
+  @apply min-w-full;
+  @apply text-white;
 }
 </style>

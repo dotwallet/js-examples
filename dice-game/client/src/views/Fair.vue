@@ -10,7 +10,7 @@
     <div class="overflow-x-scroll side-scroller px-3 mt-10 ">
       <div class="history w-max-content mx-auto">
         <div
-          class="grid p-3  text-gray-500"
+          class="grid p-3 text-gray-500"
           :class="index % 2 == 0 ? 'bg-gray-900 rounded-md ' : ''"
           v-for="(record, index) in history"
           :key="record.txid"
@@ -41,7 +41,6 @@ export default {
   methods: {
     async getRecords() {
       this.loadingBets = true;
-
       const res = await axios.get(SERVER_URL + '/seed-history');
       console.log(res.data);
       this.history = res.data;
@@ -64,7 +63,8 @@ export default {
 
 <style>
 .fair p {
-  @apply my-5 leading-7;
+  @apply my-5;
+  @apply leading-7;
 }
 .history p {
   @apply my-2;

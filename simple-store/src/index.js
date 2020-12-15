@@ -279,7 +279,10 @@ app.post('/create-autopayment', async (req, res) => {
       orderResponse = await callApi();
       orderResponseData = orderResponse.data;
     }
-    if (orderResponseData.code === 10180007) {
+    if (
+      orderResponseData.code === 10180007 || // autopay wallet balance too low
+      orderResponseData.code === 10180029 // autopay transaction limit too low
+    ) {
       res.json({ error: 'balance too low' });
     } else if (orderResponseData.code !== 0) throw orderResponseData;
     else res.json(orderResponseData.data);
