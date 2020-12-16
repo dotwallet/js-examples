@@ -132,7 +132,7 @@
         }
         // detect autopayment, set autopayment button if needed
         const autopayButton = document.getElementById('autopayment-button');
-        const autoPayLink = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${APP_ID}
+        const autoPayLink = `https://www.ddpurse.com/openapi/set_pay_config?app_id=${CLIENT_ID}
       &redirect_uri=${APP_URL}wishlist/cn`;
         autopayButton.href = autoPayLink;
         const autopayConfirmed =
@@ -171,7 +171,7 @@
               return null;
             }
             const orderData = {
-              app_id: APP_ID,
+              app_id: CLIENT_ID,
               merchant_order_sn: uuidv4(),
               item_name: 'wish-' + id,
               nonce_str: new Date().toString(),

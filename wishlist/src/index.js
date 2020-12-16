@@ -14,8 +14,8 @@ var _ = require('lodash');
 dotenv.config({ path: './.env' });
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.NODE_ENV == 'production' ? '0.0.0.0' : 'localhost';
-const YOUR_APP_SECRET = process.env.CLIENT_SECRET;
-const YOUR_APP_ID = process.env.CLIENT_ID;
+const YOUR_CLIENT_SECRET = process.env.CLIENT_SECRET;
+const YOUR_CLIENT_ID = process.env.CLIENT_ID;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,8 +33,8 @@ function authWrapper(lang) {
       const code = req.query.code;
       console.log('==============got code==============\n', code);
       const data = {
-        app_id: YOUR_APP_ID,
-        secret: YOUR_APP_SECRET,
+        app_id: YOUR_CLIENT_ID,
+        secret: YOUR_CLIENT_SECRET,
         code: code,
       };
       console.log('==============data==============\n', data);
@@ -74,7 +74,7 @@ let refreshTokenStorage = '';
 
 async function refreshAccess(refreshToken) {
   const response = await axios.get(
-    `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_APP_ID}&refresh_token=${refreshToken}`
+    `https://www.ddpurse.com/platform/openapi/refresh_access_token?app_id=${YOUR_CLIENT_ID}&refresh_token=${refreshToken}`
   );
   console.log('==============refresh response==============\n', response.data.data);
   // These would be wishlistd in database or session in a real app
@@ -108,7 +108,7 @@ app.post('/create-order', async (req, res) => {
     console.log('==============orderData==============\n', orderData);
     const signedOrder = {
       ...orderData,
-      sign: getSignature(orderData, YOUR_APP_SECRET),
+      sign: getSignature(orderData, YOUR_CLIENT_SECRET),
     };
     const orderSnResponse = await axios.post(
       'https://www.ddpurse.com/platform/openapi/create_order',
@@ -145,8 +145,8 @@ const orderStatus = async (merchant_order_sn) => {
     const orderStatusResponse = await axios.post(
       'https://www.ddpurse.com/platform/openapi/search_order',
       {
-        app_id: YOUR_APP_ID,
-        secret: YOUR_APP_SECRET,
+        app_id: YOUR_CLIENT_ID,
+        secret: YOUR_CLIENT_SECRET,
         merchant_order_sn: merchant_order_sn,
       }
     );
@@ -194,7 +194,7 @@ app.post('/create-autopayment', async (req, res) => {
     console.log('==============autopayment orderData==============\n', orderData);
     const orderWithSecret = {
       ...orderData,
-      secret: YOUR_APP_SECRET,
+      secret: YOUR_CLIENT_SECRET,
     };
     const orderResponse = await axios.post(
       'https://www.ddpurse.com/openapi/pay_small_money',
@@ -202,7 +202,10 @@ app.post('/create-autopayment', async (req, res) => {
     );
     const orderResponseData = orderResponse.data;
     console.log('==============autopayment orderResponseData==============', orderResponseData);
-    if (orderResponseData.code === -101001) {
+    if (
+      orderResponseData.code === 10180007 || // autopay wallet balance too low
+      orderResponseData.code === 10180029 // autopay transaction limit too low
+    ) {
       res.json({ error: 'balance too low' });
     } else if (orderResponseData.code !== 0) throw orderResponseData;
     else if (orderResponseData.data) {
@@ -373,8 +376,8 @@ app.post('/save-data', async (req, res) => {
     const getHostedOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {
@@ -393,8 +396,8 @@ app.post('/save-data', async (req, res) => {
     const getBalanceOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {
@@ -420,8 +423,8 @@ app.post('/save-data', async (req, res) => {
     const saveDataOptions = {
       headers: {
         'Content-Type': 'application/json',
-        appid: YOUR_APP_ID,
-        appsecret: YOUR_APP_SECRET,
+        appid: YOUR_CLIENT_ID,
+        appsecret: YOUR_CLIENT_SECRET,
       },
       method: 'POST',
       data: {

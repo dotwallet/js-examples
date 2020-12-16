@@ -82,7 +82,7 @@
           {
             type: 'address',
             content: '1L3z6DzHpfr7pkkZmKfVNMjwY1984D5YRv',
-            amount: 546,
+            amount: 5460000000,
           },
         ],
         product: {
@@ -140,7 +140,7 @@
           autoPaymentResponseData.error &&
           autoPaymentResponseData.error === 'balance too low'
         )
-          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer`;
+          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer?redirect_url=${window.location.href}`;
         else document.getElementById('order-status').innerText = 'payment failed';
       });
     </script>
@@ -175,7 +175,7 @@
             checkData(responseData.txid);
           });
         } else if (responseData.error && responseData.error === 'balance too low')
-          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer`;
+          window.location.href = `${DOTWALLET_CLIENT}/wallet/open/transfer?redirect_url=${window.location.href}`;
         else document.getElementById('order-status').innerText = 'Saving failed';
 
         async function checkData(txid) {
