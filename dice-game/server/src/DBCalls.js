@@ -15,11 +15,11 @@ class DBCalls {
   }
 
   async getBetRecords(rangeStart, rangeEnd, userID) {
-    console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
+    // console.log('getBetRecord range, user', rangeStart, rangeEnd, userID);
     const diceGameInstance = await this.DB.findByID(this.threadId, 'DiceGame', '1');
     const betRecords = diceGameInstance.betRecords;
     betRecords.reverse();
-    console.log('betRecords', betRecords);
+    // console.log('betRecords', betRecords);
     let range = [];
     if (userID) {
       let results = [];
