@@ -126,6 +126,7 @@
           APP_URL + '/create-autopayment', // replace with your IP
           {
             method: 'POST',
+            // note: in a real app, the user_id should be passed by the server. or the server should confirm that the ID provided is the actual user's ID.
             body: JSON.stringify({ ...orderData, user_id: localStorage.getItem('id') }),
             headers: {
               'Content-type': 'application/json; charset=UTF-8',
