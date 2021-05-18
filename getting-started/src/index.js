@@ -11,8 +11,8 @@ import DotWallet from '@dotwallet/js';
 /** Check out server API documentation at
  * https://dotwallet-microservice-xfl2wlshtq-de.a.run.app/docs
  */
-const SERVER_URL = 'http://localhost:3005';
-// const SERVER_URL = 'https://dotwallet-microservice-xfl2wlshtq-de.a.run.app';
+// const SERVER_URL = 'http://localhost:3005';
+const SERVER_URL = 'https://dotwallet-microservice-xfl2wlshtq-de.a.run.app';
 /** This is the client_id associated with the test server above. Replace with your own in a real app*/
 const CLIENT_ID = '89d001043806644fdb4fb14099ff6be5';
 /** Make sure to change to your own address!*/
